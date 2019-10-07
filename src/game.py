@@ -1,6 +1,6 @@
 import pygame
 import os
-from config import *
+from config import MAP_PATH, CHEAT_PARTY, CHEAT_ALL_ITEMS, CHEAT_PLAYER_IMMORTAL
 from bombman import profiler
 from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
 from playmenu import PlayMenu
@@ -376,7 +376,7 @@ class Game(object):
         
         with open(os.path.join(MAP_PATH,map_name_to_load)) as map_file:
           map_data = map_file.read()
-          self.game_map = GameMap(map_data,self.play_setup,self.game_number,self.play_setup.get_number_of_games(),self.cheat_is_active(Game.CHEAT_ALL_ITEMS))
+          self.game_map = GameMap(map_data,self.play_setup,self.game_number,self.play_setup.get_number_of_games(),self.cheat_is_active(CHEAT_ALL_ITEMS))
           
         player_slots = self.play_setup.get_slots()
         
