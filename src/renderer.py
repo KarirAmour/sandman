@@ -25,17 +25,10 @@ class Renderer(object):
     (168,127,56),            # brown
     (209,117,206)            # purple
     ]
-    
-  MAP_TILE_WIDTH = 50              ##< tile width in pixels
-  MAP_TILE_HEIGHT = 45             ##< tile height in pixels
-  MAP_TILE_HALF_WIDTH = MAP_TILE_WIDTH / 2
-  MAP_TILE_HALF_HEIGHT = MAP_TILE_HEIGHT / 2
 
   PLAYER_SPRITE_CENTER = (30,80)   ##< player's feet (not geometrical) center of the sprite in pixels
   BOMB_SPRITE_CENTER = (22,33)
   SHADOW_SPRITE_CENTER = (25,22)
-
-  MAP_BORDER_WIDTH = 37
 
   FONT_SMALL_SIZE = 12
   FONT_NORMAL_SIZE = 25

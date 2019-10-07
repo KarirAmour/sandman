@@ -1,12 +1,16 @@
+import random
+import copy
 
+from debug import debug_log
+from flame import Flame
+from player import Player
+from maptiles import MapTile
+from positionable import Positionable
+from bomb import Bomb
+from soundplayer import SoundPlayer
 
 
 class GameMap(object):
-  MAP_WIDTH = 15
-  MAP_HEIGHT = 11
-  WALL_MARGIN_HORIZONTAL = 0.2
-  WALL_MARGIN_VERTICAL = 0.4
-  
   COLLISION_BORDER_UP = 0       ##< position is inside upper border with non-walkable tile
   COLLISION_BORDER_RIGHT = 1    ##< position is inside right border with non-walkable tile
   COLLISION_BORDER_DOWN = 2     ##< position is inside bottom border with non-walkable tile
