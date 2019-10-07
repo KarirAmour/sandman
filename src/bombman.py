@@ -84,43 +84,8 @@ from positionable import Positionable
 from profiler import Profiler
 from gamemap import GameMap
 from bomb import Bomb
-
 from stringserializable import StringSerializable
 from playerkeymaps import PlayerKeyMaps
-
-
-DEBUG_PROFILING = False
-DEBUG_FPS = False
-DEBUG_VERBOSE = False
-
-#------------------------------------------------------------------------------
-
-def debug_log(message):
-  if DEBUG_VERBOSE:      
-    print(message)
-
-    
-#==============================================================================
-
-## Abstract class representing a game menu. Menu item strings can contain formatting characters:
-#
-#  ^htmlcolorcode - sets the text color (HTML #rrggbb format,e.g. ^#2E44BF) from here to end of line or another formatting character
-#==============================================================================
-#==============================================================================
-
-#==============================================================================
-
-#==============================================================================
-
-#==============================================================================
-
-#==============================================================================
-    
-
-#==============================================================================
-    
-
-#==============================================================================
 from playmenu import PlayMenu
 from settingsmenu import SettingsMenu
 from controlsmenu import ControlsMenu
@@ -131,6 +96,16 @@ from renderer import Renderer
 from ai import AI
 from settings import Settings
 from game import Game
+
+
+DEBUG_PROFILING = False
+DEBUG_FPS = False
+DEBUG_VERBOSE = False
+
+
+def debug_log(message):
+  if DEBUG_VERBOSE:      
+    print(message)
 
 if __name__ == "__main__":
   profiler = Profiler()   # profiler object is global, for simple access
