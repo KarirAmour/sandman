@@ -1,6 +1,6 @@
-sound volume: 0.0
-music volume: 0.0
-screen resolution: 1280x720
+sound volume: 0.7
+music volume: 0.2
+screen resolution: 960x720
 fullscreen: False
 control by mouse: False
 CONTROL MAPPING

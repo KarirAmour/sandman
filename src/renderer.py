@@ -1,4 +1,9 @@
-      
+import pygame
+import os
+
+from config import RESOURCE_PATH
+from gamemap import GameMap
+
 class Renderer(object):
   COLOR_RGB_VALUES = [
     (210,210,210),           # white
@@ -50,8 +55,8 @@ class Renderer(object):
     self.preview_map_name = ""
     self.preview_map_image = None
 
-    self.font_small = pygame.font.Font(os.path.join(Game.RESOURCE_PATH,"LibertySans.ttf"),Renderer.FONT_SMALL_SIZE)
-    self.font_normal = pygame.font.Font(os.path.join(Game.RESOURCE_PATH,"LibertySans.ttf"),Renderer.FONT_NORMAL_SIZE)
+    self.font_small = pygame.font.Font(os.path.join(RESOURCE_PATH,"LibertySans.ttf"),Renderer.FONT_SMALL_SIZE)
+    self.font_normal = pygame.font.Font(os.path.join(RESOURCE_PATH,"LibertySans.ttf"),Renderer.FONT_NORMAL_SIZE)
 
     self.previous_mouse_coordinates = (-1,-1)
 
@@ -60,9 +65,9 @@ class Renderer(object):
     environment_names = ["env1","env2","env3","env4","env5","env6","env7"]
 
     for environment_name in environment_names:
-      filename_floor = os.path.join(Game.RESOURCE_PATH,"tile_" + environment_name + "_floor.png")
-      filename_block = os.path.join(Game.RESOURCE_PATH,"tile_" + environment_name + "_block.png")
-      filename_wall = os.path.join(Game.RESOURCE_PATH,"tile_" + environment_name + "_wall.png")
+      filename_floor = os.path.join(RESOURCE_PATH,"tile_" + environment_name + "_floor.png")
+      filename_block = os.path.join(RESOURCE_PATH,"tile_" + environment_name + "_block.png")
+      filename_wall = os.path.join(RESOURCE_PATH,"tile_" + environment_name + "_wall.png")
 
       self.environment_images[environment_name] = (pygame.image.load(filename_floor),pygame.image.load(filename_block),pygame.image.load(filename_wall))
 
@@ -75,28 +80,28 @@ class Renderer(object):
       self.player_images.append({})
       
       for helper_string in ["up","right","down","left"]:
-        self.player_images[-1][helper_string] =  self.color_surface(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"player_" + helper_string + ".png")),i)
+        self.player_images[-1][helper_string] =  self.color_surface(pygame.image.load(os.path.join(RESOURCE_PATH,"player_" + helper_string + ".png")),i)
         
         string_index = "walk " + helper_string
       
         self.player_images[-1][string_index] = []
-        self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"player_" + helper_string + "_walk1.png")),i))
+        self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(RESOURCE_PATH,"player_" + helper_string + "_walk1.png")),i))
         
         if helper_string == "up" or helper_string == "down":
-          self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"player_" + helper_string + "_walk2.png")),i))
+          self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(RESOURCE_PATH,"player_" + helper_string + "_walk2.png")),i))
         else:
           self.player_images[-1][string_index].append(self.player_images[-1][helper_string])
         
-        self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"player_" + helper_string + "_walk3.png")),i))
+        self.player_images[-1][string_index].append(self.color_surface(pygame.image.load(os.path.join(RESOURCE_PATH,"player_" + helper_string + "_walk3.png")),i))
         self.player_images[-1][string_index].append(self.player_images[-1][string_index][0])
         
         string_index = "box " + helper_string
-        self.player_images[-1][string_index] = self.color_surface(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"player_" + helper_string + "_box.png")),i)
+        self.player_images[-1][string_index] = self.color_surface(pygame.image.load(os.path.join(RESOURCE_PATH,"player_" + helper_string + "_box.png")),i)
      
     self.bomb_images = []
-    self.bomb_images.append(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"bomb1.png")))
-    self.bomb_images.append(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"bomb2.png")))
-    self.bomb_images.append(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"bomb3.png")))
+    self.bomb_images.append(pygame.image.load(os.path.join(RESOURCE_PATH,"bomb1.png")))
+    self.bomb_images.append(pygame.image.load(os.path.join(RESOURCE_PATH,"bomb2.png")))
+    self.bomb_images.append(pygame.image.load(os.path.join(RESOURCE_PATH,"bomb3.png")))
     self.bomb_images.append(self.bomb_images[0])
      
     # load flame images
@@ -107,52 +112,52 @@ class Renderer(object):
       helper_string = "flame" + str(i)
       
       self.flame_images.append({})
-      self.flame_images[-1]["all"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + ".png"))
-      self.flame_images[-1]["horizontal"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_horizontal.png"))
-      self.flame_images[-1]["vertical"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_vertical.png"))
-      self.flame_images[-1]["left"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_left.png"))
-      self.flame_images[-1]["right"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_right.png"))
-      self.flame_images[-1]["up"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_up.png"))
-      self.flame_images[-1]["down"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,helper_string + "_down.png"))
+      self.flame_images[-1]["all"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + ".png"))
+      self.flame_images[-1]["horizontal"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_horizontal.png"))
+      self.flame_images[-1]["vertical"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_vertical.png"))
+      self.flame_images[-1]["left"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_left.png"))
+      self.flame_images[-1]["right"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_right.png"))
+      self.flame_images[-1]["up"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_up.png"))
+      self.flame_images[-1]["down"] = pygame.image.load(os.path.join(RESOURCE_PATH,helper_string + "_down.png"))
       
     # load item images
     
     self.item_images = {}
     
-    self.item_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_bomb.png"))
-    self.item_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_flame.png"))
-    self.item_images[GameMap.ITEM_SUPERFLAME] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_superflame.png"))
-    self.item_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_speedup.png"))
-    self.item_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_disease.png"))
-    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_random.png"))
-    self.item_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_spring.png"))
-    self.item_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_shoe.png"))
-    self.item_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_multibomb.png"))
-    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_random.png"))
-    self.item_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_boxing_glove.png"))
-    self.item_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_detonator.png"))
-    self.item_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"item_throwing_glove.png"))
+    self.item_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_bomb.png"))
+    self.item_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_flame.png"))
+    self.item_images[GameMap.ITEM_SUPERFLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_superflame.png"))
+    self.item_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_speedup.png"))
+    self.item_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_disease.png"))
+    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
+    self.item_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_spring.png"))
+    self.item_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_shoe.png"))
+    self.item_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_multibomb.png"))
+    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
+    self.item_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_boxing_glove.png"))
+    self.item_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_detonator.png"))
+    self.item_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_throwing_glove.png"))
       
     # load/make gui images
     
     self.gui_images = {}
-    self.gui_images["info board"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_info_board.png"))   
-    self.gui_images["arrow up"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_arrow_up.png"))   
-    self.gui_images["arrow down"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_arrow_down.png"))   
-    self.gui_images["seeker"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_seeker.png"))
-    self.gui_images["cursor"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_cursor.png"))   
+    self.gui_images["info board"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_info_board.png"))   
+    self.gui_images["arrow up"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_arrow_up.png"))   
+    self.gui_images["arrow down"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_arrow_down.png"))   
+    self.gui_images["seeker"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_seeker.png"))
+    self.gui_images["cursor"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_cursor.png"))   
     self.gui_images["prompt"] = self.render_text(self.font_normal,"You sure?",(255,255,255))
     self.gui_images["version"] = self.render_text(self.font_small,"v " + Game.VERSION_STR,(0,100,0))
     
     self.player_info_board_images = [None for i in range(10)]  # up to date infoboard image for each player
 
-    self.gui_images["out"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_out.png"))   
+    self.gui_images["out"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_out.png"))   
      
     self.gui_images["countdown"] = {}
     
-    self.gui_images["countdown"][1] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_countdown_1.png"))
-    self.gui_images["countdown"][2] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_countdown_2.png"))
-    self.gui_images["countdown"][3] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_countdown_3.png"))
+    self.gui_images["countdown"][1] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_countdown_1.png"))
+    self.gui_images["countdown"][2] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_countdown_2.png"))
+    self.gui_images["countdown"][3] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_countdown_3.png"))
     
     self.menu_background_image = None  ##< only loaded when in menu
     self.menu_item_images = None       ##< images of menu items, only loaded when in menu
@@ -161,37 +166,37 @@ class Renderer(object):
     
     self.other_images = {}
     
-    self.other_images["shadow"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_shadow.png"))
-    self.other_images["spring"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_spring.png"))
-    self.other_images["antena"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_antena.png"))
+    self.other_images["shadow"] = pygame.image.load(os.path.join(RESOURCE_PATH,"other_shadow.png"))
+    self.other_images["spring"] = pygame.image.load(os.path.join(RESOURCE_PATH,"other_spring.png"))
+    self.other_images["antena"] = pygame.image.load(os.path.join(RESOURCE_PATH,"other_antena.png"))
      
     self.other_images["disease"] = []
-    self.other_images["disease"].append(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_disease1.png")))
-    self.other_images["disease"].append(pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_disease2.png")))    
+    self.other_images["disease"].append(pygame.image.load(os.path.join(RESOURCE_PATH,"other_disease1.png")))
+    self.other_images["disease"].append(pygame.image.load(os.path.join(RESOURCE_PATH,"other_disease2.png")))    
           
     # load icon images
     
     self.icon_images = {}
-    self.icon_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_bomb.png"))
-    self.icon_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_flame.png"))
-    self.icon_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_speedup.png"))
-    self.icon_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_kicking_shoe.png"))
-    self.icon_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_boxing_glove.png"))
-    self.icon_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_throwing_glove.png"))
-    self.icon_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_spring.png"))
-    self.icon_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_multibomb.png"))
-    self.icon_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_disease.png"))
-    self.icon_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_detonator.png"))
-    self.icon_images["etc"] = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"icon_etc.png"))
+    self.icon_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_bomb.png"))
+    self.icon_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_flame.png"))
+    self.icon_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_speedup.png"))
+    self.icon_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_kicking_shoe.png"))
+    self.icon_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_boxing_glove.png"))
+    self.icon_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_throwing_glove.png"))
+    self.icon_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_spring.png"))
+    self.icon_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_multibomb.png"))
+    self.icon_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_disease.png"))
+    self.icon_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_detonator.png"))
+    self.icon_images["etc"] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_etc.png"))
     
     # load animations
     
     self.animations = {}
-    self.animations[Renderer.ANIMATION_EVENT_EXPLOSION] = Animation(os.path.join(Game.RESOURCE_PATH,"animation_explosion"),1,10,".png",7)
-    self.animations[Renderer.ANIMATION_EVENT_RIP] = Animation(os.path.join(Game.RESOURCE_PATH,"animation_rip"),1,1,".png",0.3)
-    self.animations[Renderer.ANIMATION_EVENT_SKELETION] = Animation(os.path.join(Game.RESOURCE_PATH,"animation_skeleton"),1,10,".png",7)
-    self.animations[Renderer.ANIMATION_EVENT_DISEASE_CLOUD] = Animation(os.path.join(Game.RESOURCE_PATH,"animation_disease"),1,6,".png",5)
-    self.animations[Renderer.ANIMATION_EVENT_DIE] = Animation(os.path.join(Game.RESOURCE_PATH,"animation_die"),1,7,".png",7)
+    self.animations[Renderer.ANIMATION_EVENT_EXPLOSION] = Animation(os.path.join(RESOURCE_PATH,"animation_explosion"),1,10,".png",7)
+    self.animations[Renderer.ANIMATION_EVENT_RIP] = Animation(os.path.join(RESOURCE_PATH,"animation_rip"),1,1,".png",0.3)
+    self.animations[Renderer.ANIMATION_EVENT_SKELETION] = Animation(os.path.join(RESOURCE_PATH,"animation_skeleton"),1,10,".png",7)
+    self.animations[Renderer.ANIMATION_EVENT_DISEASE_CLOUD] = Animation(os.path.join(RESOURCE_PATH,"animation_disease"),1,6,".png",5)
+    self.animations[Renderer.ANIMATION_EVENT_DIE] = Animation(os.path.join(RESOURCE_PATH,"animation_die"),1,7,".png",7)
 
     self.party_circles = []     ##< holds info about party cheat circles, list of tuples in format (coords,radius,color,phase,speed)
     self.party_circles.append(((-180,110),40,(255,100,50),0.0,1.0))
@@ -524,7 +529,7 @@ class Renderer(object):
     result = pygame.Surface(self.screen_resolution)
     
     if self.menu_background_image == None:
-      self.menu_background_image = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"gui_menu_background.png"))
+      self.menu_background_image = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_menu_background.png"))
 
     background_position = (self.screen_center[0] - self.menu_background_image.get_size()[0] / 2,self.screen_center[1] - self.menu_background_image.get_size()[1] / 2)
       
@@ -799,14 +804,14 @@ class Renderer(object):
     debug_log("prerendering map...")
 
     # following images are only needed here, so we dont store them to self
-    image_trampoline = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_trampoline.png"))
-    image_teleport = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_teleport.png"))
-    image_arrow_up = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_arrow_up.png"))
-    image_arrow_right = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_arrow_right.png"))
-    image_arrow_down = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_arrow_down.png"))
-    image_arrow_left = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_arrow_left.png"))
-    image_lava = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_lava.png"))
-    image_background = pygame.image.load(os.path.join(Game.RESOURCE_PATH,"other_map_background.png"))
+    image_trampoline = pygame.image.load(os.path.join(RESOURCE_PATH,"other_trampoline.png"))
+    image_teleport = pygame.image.load(os.path.join(RESOURCE_PATH,"other_teleport.png"))
+    image_arrow_up = pygame.image.load(os.path.join(RESOURCE_PATH,"other_arrow_up.png"))
+    image_arrow_right = pygame.image.load(os.path.join(RESOURCE_PATH,"other_arrow_right.png"))
+    image_arrow_down = pygame.image.load(os.path.join(RESOURCE_PATH,"other_arrow_down.png"))
+    image_arrow_left = pygame.image.load(os.path.join(RESOURCE_PATH,"other_arrow_left.png"))
+    image_lava = pygame.image.load(os.path.join(RESOURCE_PATH,"other_lava.png"))
+    image_background = pygame.image.load(os.path.join(RESOURCE_PATH,"other_map_background.png"))
 
     self.prerendered_map_background.blit(image_background,(0,0))
 

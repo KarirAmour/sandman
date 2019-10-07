@@ -1,5 +1,10 @@
 
+import pygame
+
 from stringserializable import StringSerializable
+from config import NUMBER_OF_CONTROLLED_PLAYERS
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
+from renderer import Renderer
 
 ## Handles conversion of keyboard events to actions of players, plus general
 #  actions (such as menu, ...). Also managed some more complex input processing.
@@ -295,7 +300,7 @@ class PlayerKeyMaps(StringSerializable):
   def save_to_string(self):
     result = ""
 
-    for i in range(Game.NUMBER_OF_CONTROLLED_PLAYERS):  # 4 players
+    for i in range(NUMBER_OF_CONTROLLED_PLAYERS):  # 4 players
       mapping = self.get_players_key_mapping(i)
       
       for action in mapping:

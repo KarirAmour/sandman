@@ -1,5 +1,6 @@
     
 from stringserializable import StringSerializable
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
 
 class Settings(StringSerializable):
   POSSIBLE_SCREEN_RESOLUTIONS = (
