@@ -1,4 +1,6 @@
     
+import bombman
+
 from playmenu import PlayMenu
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
@@ -11,7 +13,8 @@ from playsetupmenu import PlaySetupMenu
 from resultmenu import ResultMenu
 from mainmenu import MainMenu
 from menu import Menu
-
+from gamemap import GameMap
+from profiler import Profiler
 from renderer import Renderer
 # from ai import AI
 # from settings import Settings

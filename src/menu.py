@@ -1,3 +1,5 @@
+from playerkeymaps import PlayerKeyMaps
+from soundplayer import SoundPlayer
 #==============================================================================
 
 ## Abstract class representing a game menu. Menu item strings can contain formatting characters:

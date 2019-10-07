@@ -1,3 +1,9 @@
+import pygame
+import random
+import os
+
+from game import Game
+from settings import Settings
 class SoundPlayer(object):
   # sound events used by other classes to tell soundplayer what to play
   

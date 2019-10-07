@@ -71,14 +71,12 @@
 #                     <0-9> - starting position of the player specified by the number
 
 import sys
-import pygame
-import os
 import math
 import copy
-import random
+
 import re
 import time
-
+from profiler import Profiler
 from game import Game
 
 if __name__ == "__main__":

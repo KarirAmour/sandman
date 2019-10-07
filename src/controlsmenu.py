@@ -1,4 +1,8 @@
+import pygame
+
 from menu import Menu
+from playerkeymaps import PlayerKeyMaps
+from game import Game
 
 class ControlsMenu(Menu):
 
