@@ -1,6 +1,6 @@
-    
-import bombman
+import pygame
 
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
 from playmenu import PlayMenu
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
@@ -15,6 +15,7 @@ from mainmenu import MainMenu
 from menu import Menu
 from gamemap import GameMap
 from profiler import Profiler
+from settings import Settings
 from renderer import Renderer
 # from ai import AI
 # from settings import Settings

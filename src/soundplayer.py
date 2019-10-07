@@ -2,7 +2,8 @@ import pygame
 import random
 import os
 
-from game import Game
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
+from config import RESOURCE_PATH
 from settings import Settings
 class SoundPlayer(object):
   # sound events used by other classes to tell soundplayer what to play
@@ -42,22 +43,22 @@ class SoundPlayer(object):
     self.music_volume = 0.5
    
     self.sounds = {}
-    self.sounds[SoundPlayer.SOUND_EVENT_EXPLOSION] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"explosion.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_BOMB_PUT] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"bomb.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_WALK] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"footsteps.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_KICK] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"kick.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_SPRING] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"spring.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_DIARRHEA] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"fart.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_SLOW] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"slow.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_DISEASE] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"disease.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_CLICK] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"click.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_THROW] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"throw.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_TRAMPOLINE] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"trampoline.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_TELEPORT] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"teleport.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_DEATH] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"death.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_GO] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"go.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_EARTHQUAKE] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"earthquake.wav"))
-    self.sounds[SoundPlayer.SOUND_EVENT_CONFIRM] = pygame.mixer.Sound(os.path.join(Game.RESOURCE_PATH,"confirm.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_EXPLOSION] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"explosion.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_BOMB_PUT] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"bomb.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_WALK] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"footsteps.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_KICK] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"kick.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_SPRING] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"spring.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_DIARRHEA] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"fart.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_SLOW] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"slow.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_DISEASE] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"disease.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_CLICK] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"click.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_THROW] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"throw.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_TRAMPOLINE] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"trampoline.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_TELEPORT] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"teleport.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_DEATH] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"death.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_GO] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"go.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_EARTHQUAKE] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"earthquake.wav"))
+    self.sounds[SoundPlayer.SOUND_EVENT_CONFIRM] = pygame.mixer.Sound(os.path.join(RESOURCE_PATH,"confirm.wav"))
 
     self.music_filenames = [
       "music_loyalty_freak_slow_pogo.wav",
@@ -122,7 +123,7 @@ class SoundPlayer(object):
     debug_log("changing music to \"" + music_name + "\"")
     
     pygame.mixer.music.stop()
-    pygame.mixer.music.load(os.path.join(Game.RESOURCE_PATH,music_name))
+    pygame.mixer.music.load(os.path.join(RESOURCE_PATH,music_name))
     pygame.mixer.music.set_volume(self.music_volume)
     pygame.mixer.music.play(-1)
 
@@ -171,7 +172,7 @@ class SoundPlayer(object):
           self.sounds[SoundPlayer.SOUND_EVENT_KICK].play()
           self.kick_last_played_time = time_now
       elif SoundPlayer.SOUND_EVENT_WIN_0 <= sound_event <= SoundPlayer.SOUND_EVENT_WIN_9:
-        self.play_once(os.path.join(Game.RESOURCE_PATH,"win" + str(sound_event - SoundPlayer.SOUND_EVENT_WIN_0) + ".wav"))
+        self.play_once(os.path.join(RESOURCE_PATH,"win" + str(sound_event - SoundPlayer.SOUND_EVENT_WIN_0) + ".wav"))
       
     if self.playing_walk and stop_playing_walk:
       self.sounds[SoundPlayer.SOUND_EVENT_WALK].stop()

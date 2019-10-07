@@ -1,8 +1,9 @@
 import pygame
 
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
+from config import NUMBER_OF_CONTROLLED_PLAYERS
 from menu import Menu
 from playerkeymaps import PlayerKeyMaps
-from game import Game
 
 class ControlsMenu(Menu):
 
@@ -29,7 +30,7 @@ class ControlsMenu(Menu):
     
     prompt_string = "press some key"
     
-    for i in range(Game.NUMBER_OF_CONTROLLED_PLAYERS):
+    for i in range(NUMBER_OF_CONTROLLED_PLAYERS):
       player_string = "p " + str(i + 1)
       
       player_maps = self.player_key_maps.get_players_key_mapping(i)
@@ -105,7 +106,7 @@ class ControlsMenu(Menu):
       # new key map will be captured
       helper_index = self.selected_item[0] - 1
       
-      if helper_index == Game.NUMBER_OF_CONTROLLED_PLAYERS * 6:   # 6 controls for each player, then menu item follows
+      if helper_index == NUMBER_OF_CONTROLLED_PLAYERS * 6:   # 6 controls for each player, then menu item follows
         self.waiting_for_key = (-1,PlayerKeyMaps.ACTION_MENU)
       else:
         action_index = helper_index % 6
