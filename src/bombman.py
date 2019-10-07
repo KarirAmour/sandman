@@ -79,22 +79,6 @@ import random
 import re
 import time
 
-from player import Player
-from positionable import Positionable
-from profiler import Profiler
-from gamemap import GameMap
-from bomb import Bomb
-from stringserializable import StringSerializable
-from playerkeymaps import PlayerKeyMaps
-from playmenu import PlayMenu
-from settingsmenu import SettingsMenu
-from controlsmenu import ControlsMenu
-from aboutmenu import AboutMenu
-from mapselectmenu import MapSelectMenu
-from playsetupmenu import PlaySetupMenu
-from renderer import Renderer
-from ai import AI
-from settings import Settings
 from game import Game
 
 

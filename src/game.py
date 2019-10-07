@@ -1,4 +1,21 @@
     
+from playmenu import PlayMenu
+from playerkeymaps import PlayerKeyMaps
+from soundplayer import SoundPlayer
+from playsetup import PlaySetup
+from settingsmenu import SettingsMenu
+from controlsmenu import ControlsMenu
+from aboutmenu import AboutMenu
+from mapselectmenu import MapSelectMenu
+from playsetupmenu import PlaySetupMenu
+from resultmenu import ResultMenu
+from mainmenu import MainMenu
+from menu import Menu
+
+from renderer import Renderer
+# from ai import AI
+# from settings import Settings
+
 class Game(object):    
   # colors used for players and teams
   COLOR_WHITE = 0
