@@ -1,6 +1,6 @@
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
-from config import MENU_MAX_ITEMS_VISIBLE
+from config import MenuConfig
 
 #==============================================================================
 
@@ -30,7 +30,7 @@ class Menu(object):
       PlayerKeyMaps.ACTION_SPECIAL : True,
       PlayerKeyMaps.ACTION_BOMB_DOUBLE: True,
       PlayerKeyMaps.ACTION_MENU : True}        ##< to detect single key presses, the values have to be True in order not to rect immediatelly upon entering the menu
-    self.state = Menu.MENU_STATE_SELECTING
+    self.state = MenuConfig.MENU_STATE_SELECTING
     pass
 
   #----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class Menu(object):
     
   def prompt_action_confirm(self):
     self.confirm_prompt_result = None
-    self.state = Menu.MENU_STATE_CONFIRM_PROMPT
+    self.state = MenuConfig.MENU_STATE_CONFIRM_PROMPT
 
   #----------------------------------------------------------------------------
     
@@ -73,7 +73,7 @@ class Menu(object):
   def process_inputs(self, input_list):
     if self.menu_left:
       self.menu_left = False
-      self.state = Menu.MENU_STATE_SELECTING
+      self.state = MenuConfig.MENU_STATE_SELECTING
       
       for action_code in self.action_keys_previous_state:
         self.action_keys_previous_state[action_code] = True
@@ -132,7 +132,7 @@ class Menu(object):
         self.action_pressed(PlayerKeyMaps.ACTION_UP)
     else:   # down
       rows = len(self.items[self.selected_item[1]])  
-      maximum_row = rows - Menu.MENU_MAX_ITEMS_VISIBLE
+      maximum_row = rows - MenuConfig.MENU_MAX_ITEMS_VISIBLE
       
       if self.scroll_position < maximum_row:
         self.scroll_position += 1
@@ -152,7 +152,7 @@ class Menu(object):
   ## Prompts confirmation of given menu item if it has been selected.
      
   def prompt_if_needed(self, menu_item_coordinates):
-    if self.state == Menu.MENU_STATE_CONFIRM and (self.confirm_prompt_result == None or self.confirm_prompt_result == False) and self.selected_item == menu_item_coordinates:
+    if self.state == MenuConfig.MENU_STATE_CONFIRM and (self.confirm_prompt_result == None or self.confirm_prompt_result == False) and self.selected_item == menu_item_coordinates:
       self.prompt_action_confirm()
 
   #----------------------------------------------------------------------------
@@ -163,13 +163,13 @@ class Menu(object):
   def action_pressed(self, action):
     old_selected_item = self.selected_item
     
-    if self.state == Menu.MENU_STATE_CONFIRM_PROMPT:
+    if self.state == MenuConfig.MENU_STATE_CONFIRM_PROMPT:
       if action == PlayerKeyMaps.ACTION_BOMB or action == PlayerKeyMaps.ACTION_BOMB_DOUBLE:
         self.confirm_prompt_result = True
-        self.state = Menu.MENU_STATE_CONFIRM
+        self.state = MenuConfig.MENU_STATE_CONFIRM
       else:
         self.confirm_prompt_result = False
-        self.state = Menu.MENU_STATE_SELECTING
+        self.state = MenuConfig.MENU_STATE_SELECTING
     else:
       if action == PlayerKeyMaps.ACTION_UP:
         self.selected_item = (max(0,self.selected_item[0] - 1),self.selected_item[1])
@@ -182,11 +182,11 @@ class Menu(object):
         new_column = min(len(self.items) - 1,self.selected_item[1] + 1)
         self.selected_item = (min(len(self.items[new_column]) - 1,self.selected_item[0]),new_column)
       elif action == PlayerKeyMaps.ACTION_BOMB or action == PlayerKeyMaps.ACTION_BOMB_DOUBLE:
-        self.state = Menu.MENU_STATE_CONFIRM
+        self.state = MenuConfig.MENU_STATE_CONFIRM
       elif action == PlayerKeyMaps.ACTION_SPECIAL:
-        self.state = Menu.MENU_STATE_CANCEL
+        self.state = MenuConfig.MENU_STATE_CANCEL
       
-    if self.selected_item[0] >= self.scroll_position + Menu.MENU_MAX_ITEMS_VISIBLE:
+    if self.selected_item[0] >= self.scroll_position + MenuConfig.MENU_MAX_ITEMS_VISIBLE:
       self.scroll_position += 1
     elif self.selected_item[0] < self.scroll_position:
       self.scroll_position -= 1

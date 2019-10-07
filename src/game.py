@@ -1,8 +1,9 @@
 import pygame
 import os
-from config import MAP_PATH, CHEAT_PARTY, CHEAT_ALL_ITEMS, CHEAT_PLAYER_IMMORTAL
-from profiler import Profiler
+from config import CheatCode, MenuConfig, GameState, MAP_PATH, SETTINGS_FILE_PATH
 from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
+from rendererutils import RendererUtils
+from profiler import Profiler
 from playmenu import PlayMenu
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
@@ -21,7 +22,6 @@ from settings import Settings
 from renderer import Renderer
 
 class Game(object):    
-  # colors used for players and teams
     
   STATE_PLAYING = 0
   STATE_EXIT = 1
@@ -34,14 +34,6 @@ class Game(object):
   STATE_MENU_PLAY = 8
   STATE_MENU_RESULTS = 9
   STATE_GAME_STARTED = 10
-  
-
-  
-  
-  
-  SETTINGS_FILE_PATH = "settings.txt"
-
-  #----------------------------------------------------------------------------
   
   def __init__(self):
     pygame.mixer.pre_init(22050,-16,2,512)   # set smaller audio buffer size to prevent audio lag
@@ -57,12 +49,12 @@ class Game(object):
     
     self.game_number = 0
     
-    if os.path.isfile(Game.SETTINGS_FILE_PATH):
-      debug_log("loading settings from file " + Game.SETTINGS_FILE_PATH)
+    if os.path.isfile(SETTINGS_FILE_PATH):
+      debug_log("loading settings from file " + SETTINGS_FILE_PATH)
       
-      self.settings.load_from_file(Game.SETTINGS_FILE_PATH)
+      self.settings.load_from_file(SETTINGS_FILE_PATH)
  
-    self.settings.save_to_file(Game.SETTINGS_FILE_PATH)  # save the reformatted settings file (or create a new one)
+    self.settings.save_to_file(SETTINGS_FILE_PATH)  # save the reformatted settings file (or create a new one)
     
     pygame.display.set_caption("Bombman")
     
@@ -144,7 +136,7 @@ class Game(object):
  
     self.screen = pygame.display.set_mode(self.settings.screen_resolution,display_flags)
     
-    screen_center = (Renderer.get_screen_size()[0] / 2,Renderer.get_screen_size()[1] / 2)
+    screen_center = (RendererUtils.get_screen_size()[0] / 2, RendererUtils.get_screen_size()[1] / 2)
     pygame.mouse.set_pos(screen_center)
     
     self.renderer.update_screen_info()
@@ -163,7 +155,7 @@ class Game(object):
   #----------------------------------------------------------------------------
   
   def save_settings(self):
-    self.settings.save_to_file(Game.SETTINGS_FILE_PATH)
+    self.settings.save_to_file(SETTINGS_FILE_PATH)
 
   #----------------------------------------------------------------------------
 
@@ -185,9 +177,9 @@ class Game(object):
     prevent_input_processing = False
     
     # cheack if any cheat was typed:
-    self.__check_cheat("party", CHEAT_PARTY)
-    self.__check_cheat("herecomedatboi", CHEAT_ALL_ITEMS)
-    self.__check_cheat("leeeroy", CHEAT_PLAYER_IMMORTAL)
+    self.__check_cheat("party", CheatCode.CHEAT_PARTY)
+    self.__check_cheat("herecomedatboi", CheatCode.CHEAT_ALL_ITEMS)
+    self.__check_cheat("leeeroy", CheatCode.CHEAT_PLAYER_IMMORTAL)
     self.__check_cheat("revert")
 
     self.player_key_maps.get_current_actions()       # this has to be called in order for player_key_maps to update mouse controls properly
@@ -196,7 +188,7 @@ class Game(object):
     if self.state == Game.STATE_MENU_MAIN: 
       self.active_menu = self.menu_main
       
-      if self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         new_state = [
           Game.STATE_MENU_PLAY_SETUP,
           Game.STATE_MENU_SETTINGS,
@@ -208,10 +200,10 @@ class Game(object):
     elif self.state == Game.STATE_MENU_PLAY:
       self.active_menu = self.menu_play
 
-      if self.active_menu.get_state() == Menu.MENU_STATE_CANCEL:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CANCEL:
         new_state = Game.STATE_PLAYING
 
-      elif self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      elif self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         if self.active_menu.get_selected_item() == (0,0):
           new_state = Game.STATE_PLAYING
           
@@ -227,9 +219,9 @@ class Game(object):
     elif self.state == Game.STATE_MENU_SETTINGS: 
       self.active_menu = self.menu_settings
       
-      if self.active_menu.get_state() == Menu.MENU_STATE_CANCEL:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CANCEL:
         new_state = Game.STATE_MENU_MAIN
-      elif self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      elif self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         if self.active_menu.get_selected_item() == (5,0):
           new_state = Game.STATE_MENU_CONTROL_SETTINGS
         elif self.active_menu.get_selected_item() == (7,0):
@@ -240,9 +232,9 @@ class Game(object):
       self.active_menu = self.menu_controls
       self.active_menu.update(self.player_key_maps)    # needs to be called to scan for pressed keys
       
-      if self.active_menu.get_state() == Menu.MENU_STATE_CANCEL:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CANCEL:
         new_state = Game.STATE_MENU_SETTINGS
-      elif self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      elif self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         if self.active_menu.get_selected_item() == (0,0):
           new_state = Game.STATE_MENU_SETTINGS
         
@@ -250,16 +242,16 @@ class Game(object):
     elif self.state == Game.STATE_MENU_ABOUT: 
       self.active_menu = self.menu_about
       
-      if self.active_menu.get_state() in (Menu.MENU_STATE_CONFIRM,Menu.MENU_STATE_CANCEL):
+      if self.active_menu.get_state() in (MenuConfig.MENU_STATE_CONFIRM,MenuConfig.MENU_STATE_CANCEL):
         new_state = Game.STATE_MENU_MAIN
     
     # ============== PLAY SETUP MENU ==============
     elif self.state == Game.STATE_MENU_PLAY_SETUP: 
       self.active_menu = self.menu_play_setup
       
-      if self.active_menu.get_state() == Menu.MENU_STATE_CANCEL:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CANCEL:
         new_state = Game.STATE_MENU_MAIN
-      elif self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      elif self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         if self.active_menu.get_selected_item() == (0,1):
           new_state = Game.STATE_MENU_MAP_SELECT
         elif self.active_menu.get_selected_item() == (0,0):
@@ -269,21 +261,21 @@ class Game(object):
     elif self.state == Game.STATE_MENU_MAP_SELECT:
       self.active_menu = self.menu_map_select
       
-      if self.active_menu.get_state() == Menu.MENU_STATE_CANCEL:
+      if self.active_menu.get_state() == MenuConfig.MENU_STATE_CANCEL:
         new_state = Game.STATE_MENU_PLAY_SETUP
-      elif self.active_menu.get_state() == Menu.MENU_STATE_CONFIRM:
+      elif self.active_menu.get_state() == MenuConfig.MENU_STATE_CONFIRM:
         self.map_name = self.active_menu.get_selected_map_name()
         self.random_map_selection = self.active_menu.random_was_selected()
         self.game_number = 1     # first game
         new_state = Game.STATE_GAME_STARTED
         
-        self.deactivate_cheat(CHEAT_PARTY)
+        self.deactivate_cheat(CheatCode.CHEAT_PARTY)
     
     # ================ RESULT MENU ================
     elif self.state == Game.STATE_MENU_RESULTS:
       self.active_menu = self.menu_results
     
-      if self.active_menu.get_state() in (Menu.MENU_STATE_CONFIRM,Menu.MENU_STATE_CANCEL):
+      if self.active_menu.get_state() in (MenuConfig.MENU_STATE_CONFIRM,MenuConfig.MENU_STATE_CANCEL):
         new_state = Game.STATE_MENU_MAIN
       
     if new_state != self.state:  # going to new state
@@ -335,7 +327,7 @@ class Game(object):
         self.simulation_step(dt)
         self.profiler.measure_stop("sim.")
         
-        if self.game_map.get_state() == GameMap.STATE_GAME_OVER:
+        if self.game_map.get_state() == GameState.STATE_GAME_OVER:
           self.game_number += 1
           
           if self.game_number > self.play_setup.get_number_of_games():
@@ -367,11 +359,11 @@ class Game(object):
         
         with open(os.path.join(MAP_PATH,map_name_to_load)) as map_file:
           map_data = map_file.read()
-          self.game_map = GameMap(map_data,self.play_setup,self.game_number,self.play_setup.get_number_of_games(),self.cheat_is_active(CHEAT_ALL_ITEMS))
+          self.game_map = GameMap(map_data,self.play_setup,self.game_number,self.play_setup.get_number_of_games(),self.cheat_is_active(CheatCode.CHEAT_ALL_ITEMS))
           
         player_slots = self.play_setup.get_slots()
         
-        if self.cheat_is_active(CHEAT_PLAYER_IMMORTAL):
+        if self.cheat_is_active(CheatCode.CHEAT_PLAYER_IMMORTAL):
           self.immortal_players_numbers = []
           
           for i in range(len(player_slots)):

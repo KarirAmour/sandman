@@ -4,11 +4,13 @@ from enum import Enum
 # Game Settings
 VERSION_STR = "0.95"
 
+SETTINGS_FILE_PATH = "settings.txt"
 RESOURCE_PATH = "resources"
 MAP_PATH = "maps"
 
 NUMBER_OF_CONTROLLED_PLAYERS = 4    ##< maximum number of non-AI players on one PC
 
+# colors used for players and teams
 COLOR_NAMES = [
     "white",
     "black",

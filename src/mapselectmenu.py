@@ -2,7 +2,7 @@ import os
 import random
 
 from menu import Menu
-from renderer import Renderer
+from rendererutils import RendererUtils
 from config import MAP_PATH
 
 class MapSelectMenu(Menu):
@@ -22,7 +22,7 @@ class MapSelectMenu(Menu):
 
     special_color = (100,100,255)
 
-    self.items = [["^" + Renderer.rgb_to_html_notation(special_color) + "pick random","^" + Renderer.rgb_to_html_notation(special_color) + "each game random"]]
+    self.items = [["^" + RendererUtils.rgb_to_html_notation(special_color) + "pick random","^" + RendererUtils.rgb_to_html_notation(special_color) + "each game random"]]
 
     for filename in self.map_filenames:
       self.items[0].append(filename)

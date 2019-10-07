@@ -4,11 +4,8 @@ import math
 import os
 import re
 
-from config import VERSION_STR, RESOURCE_PATH, COLOR_NAMES, CHEAT_PARTY, MAP_PATH, \
-  MENU_MAX_ITEMS_VISIBLE, MENU_STATE_CONFIRM_PROMPT, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, \
-    MAP_BORDER_WIDTH,MAP_HEIGHT, MAP_WIDTH, MAP_TILE_HALF_HEIGHT, MAP_TILE_HALF_WIDTH, \
-      ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_DISEASE_CLOUD, ANIMATION_EVENT_DIE, \
-        ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION
+from config import VERSION_STR, RESOURCE_PATH, MAP_PATH, COLOR_NAMES, START_GAME_AFTER, \
+  CheatCode, MenuConfig, RendererConfig, MapConfig, GameState
 from debug import debug_log
 from gamemap import GameMap
 from animation import Animation
@@ -19,20 +16,9 @@ from bomb import Bomb
 from mapselectmenu import MapSelectMenu
 from playsetup import PlaySetup
 from rendererutils import RendererUtils
+from item import Item
 
 class Renderer(object):
-  COLOR_RGB_VALUES = [
-    (210,210,210),           # white
-    (10,10,10),              # black
-    (255,0,0),               # red
-    (0,0,255),               # blue
-    (0,255,0),               # green
-    (52,237,250),            # cyan
-    (255,255,69),            # yellow
-    (255,192,74),            # orange
-    (168,127,56),            # brown
-    (209,117,206)            # purple
-    ]
 
   PLAYER_SPRITE_CENTER = (30,80)   ##< player's feet (not geometrical) center of the sprite in pixels
   BOMB_SPRITE_CENTER = (22,33)
@@ -79,7 +65,7 @@ class Renderer(object):
       self.environment_images[environment_name] = (pygame.image.load(filename_floor),pygame.image.load(filename_block),pygame.image.load(filename_wall))
 
     self.prerendered_map = None     # keeps a reference to a map for which some parts have been prerendered
-    self.prerendered_map_background = pygame.Surface((MAP_WIDTH * MAP_TILE_WIDTH + 2 * MAP_BORDER_WIDTH,MAP_HEIGHT * MAP_TILE_HEIGHT + 2 * MAP_BORDER_WIDTH))
+    self.prerendered_map_background = pygame.Surface((MapConfig.MAP_WIDTH * MapConfig.MAP_TILE_WIDTH + 2 * MapConfig.MAP_BORDER_WIDTH,MapConfig.MAP_HEIGHT * MapConfig.MAP_TILE_HEIGHT + 2 * MapConfig.MAP_BORDER_WIDTH))
 
     self.player_images = []         ##< player images in format [color index]["sprite name"] and [color index]["sprite name"][frame]
 
@@ -131,19 +117,19 @@ class Renderer(object):
     
     self.item_images = {}
     
-    self.item_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_bomb.png"))
-    self.item_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_flame.png"))
-    self.item_images[GameMap.ITEM_SUPERFLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_superflame.png"))
-    self.item_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_speedup.png"))
-    self.item_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_disease.png"))
-    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
-    self.item_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_spring.png"))
-    self.item_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_shoe.png"))
-    self.item_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_multibomb.png"))
-    self.item_images[GameMap.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
-    self.item_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_boxing_glove.png"))
-    self.item_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_detonator.png"))
-    self.item_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_throwing_glove.png"))
+    self.item_images[Item.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_bomb.png"))
+    self.item_images[Item.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_flame.png"))
+    self.item_images[Item.ITEM_SUPERFLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_superflame.png"))
+    self.item_images[Item.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_speedup.png"))
+    self.item_images[Item.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_disease.png"))
+    self.item_images[Item.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
+    self.item_images[Item.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_spring.png"))
+    self.item_images[Item.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_shoe.png"))
+    self.item_images[Item.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_multibomb.png"))
+    self.item_images[Item.ITEM_RANDOM] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_random.png"))
+    self.item_images[Item.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_boxing_glove.png"))
+    self.item_images[Item.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_detonator.png"))
+    self.item_images[Item.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"item_throwing_glove.png"))
       
     # load/make gui images
     
@@ -184,26 +170,26 @@ class Renderer(object):
     # load icon images
     
     self.icon_images = {}
-    self.icon_images[GameMap.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_bomb.png"))
-    self.icon_images[GameMap.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_flame.png"))
-    self.icon_images[GameMap.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_speedup.png"))
-    self.icon_images[GameMap.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_kicking_shoe.png"))
-    self.icon_images[GameMap.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_boxing_glove.png"))
-    self.icon_images[GameMap.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_throwing_glove.png"))
-    self.icon_images[GameMap.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_spring.png"))
-    self.icon_images[GameMap.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_multibomb.png"))
-    self.icon_images[GameMap.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_disease.png"))
-    self.icon_images[GameMap.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_detonator.png"))
+    self.icon_images[Item.ITEM_BOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_bomb.png"))
+    self.icon_images[Item.ITEM_FLAME] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_flame.png"))
+    self.icon_images[Item.ITEM_SPEEDUP] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_speedup.png"))
+    self.icon_images[Item.ITEM_SHOE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_kicking_shoe.png"))
+    self.icon_images[Item.ITEM_BOXING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_boxing_glove.png"))
+    self.icon_images[Item.ITEM_THROWING_GLOVE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_throwing_glove.png"))
+    self.icon_images[Item.ITEM_SPRING] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_spring.png"))
+    self.icon_images[Item.ITEM_MULTIBOMB] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_multibomb.png"))
+    self.icon_images[Item.ITEM_DISEASE] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_disease.png"))
+    self.icon_images[Item.ITEM_DETONATOR] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_detonator.png"))
     self.icon_images["etc"] = pygame.image.load(os.path.join(RESOURCE_PATH,"icon_etc.png"))
     
     # load animations
     
     self.animations = {}
-    self.animations[ANIMATION_EVENT_EXPLOSION] = Animation(os.path.join(RESOURCE_PATH,"animation_explosion"),1,10,".png",7)
-    self.animations[ANIMATION_EVENT_RIP] = Animation(os.path.join(RESOURCE_PATH,"animation_rip"),1,1,".png",0.3)
-    self.animations[ANIMATION_EVENT_SKELETION] = Animation(os.path.join(RESOURCE_PATH,"animation_skeleton"),1,10,".png",7)
-    self.animations[ANIMATION_EVENT_DISEASE_CLOUD] = Animation(os.path.join(RESOURCE_PATH,"animation_disease"),1,6,".png",5)
-    self.animations[ANIMATION_EVENT_DIE] = Animation(os.path.join(RESOURCE_PATH,"animation_die"),1,7,".png",7)
+    self.animations[RendererConfig.ANIMATION_EVENT_EXPLOSION] = Animation(os.path.join(RESOURCE_PATH,"animation_explosion"),1,10,".png",7)
+    self.animations[RendererConfig.ANIMATION_EVENT_RIP] = Animation(os.path.join(RESOURCE_PATH,"animation_rip"),1,1,".png",0.3)
+    self.animations[RendererConfig.ANIMATION_EVENT_SKELETION] = Animation(os.path.join(RESOURCE_PATH,"animation_skeleton"),1,10,".png",7)
+    self.animations[RendererConfig.ANIMATION_EVENT_DISEASE_CLOUD] = Animation(os.path.join(RESOURCE_PATH,"animation_disease"),1,6,".png",5)
+    self.animations[RendererConfig.ANIMATION_EVENT_DIE] = Animation(os.path.join(RESOURCE_PATH,"animation_die"),1,7,".png",7)
 
     self.party_circles = []     ##< holds info about party cheat circles, list of tuples in format (coords,radius,color,phase,speed)
     self.party_circles.append(((-180,110),40,(255,100,50),0.0,1.0))
@@ -238,21 +224,7 @@ class Renderer(object):
     self.map_render_location = RendererUtils.get_map_render_position()
 
   #----------------------------------------------------------------------------
-  
-  ## Converts (r,g,b) tuple to html #rrggbb notation.
 
-  @staticmethod
-  def rgb_to_html_notation(rgb_color):
-    return "#" + hex(rgb_color[0])[2:].zfill(2) + hex(rgb_color[1])[2:].zfill(2) + hex(rgb_color[2])[2:].zfill(2)
-
-  #----------------------------------------------------------------------------
-     
-  @staticmethod
-  def colored_text(color_index, text, end_with_white=True):
-    return "^" + Renderer.rgb_to_html_notation(Renderer.lighten_color(Renderer.COLOR_RGB_VALUES[color_index],75)) + text + "^#FFFFFF"
-
-  #----------------------------------------------------------------------------
-    
   @staticmethod
   def colored_color_name(color_index, end_with_white=True):
     return Renderer.colored_text(color_index,COLOR_NAMES[color_index])
@@ -280,7 +252,7 @@ class Renderer(object):
   #----------------------------------------------------------------------------
 
   def tile_position_to_pixel_position(self, tile_position,center=(0,0)):
-    return (int(float(tile_position[0]) * MAP_TILE_WIDTH) - center[0],int(float(tile_position[1]) * MAP_TILE_HEIGHT) - center[1])
+    return (int(float(tile_position[0]) * MapConfig.MAP_TILE_WIDTH) - center[0],int(float(tile_position[1]) * MapConfig.MAP_TILE_HEIGHT) - center[1])
 
   #----------------------------------------------------------------------------
     
@@ -289,26 +261,8 @@ class Renderer(object):
 
   #----------------------------------------------------------------------------
 
-  @staticmethod
-  def darken_color(color, by_how_may):
-    r = max(color[0] - by_how_may,0)
-    g = max(color[1] - by_how_may,0)
-    b = max(color[2] - by_how_may,0)
-    return (r,g,b)
-
-  #----------------------------------------------------------------------------
-
-  @staticmethod
-  def lighten_color(color, by_how_may):
-    r = min(color[0] + by_how_may,255)
-    g = min(color[1] + by_how_may,255)
-    b = min(color[2] + by_how_may,255)
-    return (r,g,b)
-
-  #----------------------------------------------------------------------------
-
   def __render_info_board_item_row(self, x, y, limit, item_type, player, board_image):   
-    item_count = 20 if item_type == GameMap.ITEM_FLAME and player.get_item_count(GameMap.ITEM_SUPERFLAME) >= 1 else player.get_item_count(item_type)
+    item_count = 20 if item_type == Item.ITEM_FLAME and player.get_item_count(Item.ITEM_SUPERFLAME) >= 1 else player.get_item_count(item_type)
    
     for i in range(item_count):
       if i > limit:
@@ -360,7 +314,7 @@ class Renderer(object):
       board_image.blit(self.gui_images["info board"],(0,0))
       board_image.blit(self.font_small.render(str(player.get_kills()),True,(0,0,0)),(45,0))
       board_image.blit(self.font_small.render(str(player.get_wins()),True,(0,0,0)),(65,0))
-      board_image.blit(self.font_small.render(COLOR_NAMES[i],True,Renderer.darken_color(Renderer.COLOR_RGB_VALUES[i],100)),(4,2))
+      board_image.blit(self.font_small.render(COLOR_NAMES[i],True,RendererUtils.darken_color(Renderer.COLOR_RGB_VALUES[i],100)),(4,2))
       
       if player.is_dead():
         board_image.blit(self.gui_images["out"],(15,34))
@@ -371,23 +325,23 @@ class Renderer(object):
       x = 5
       dy = 12
 
-      self.__render_info_board_item_row(x,20,5,GameMap.ITEM_BOMB,player,board_image)
-      self.__render_info_board_item_row(x,20 + dy,5,GameMap.ITEM_FLAME,player,board_image)
-      self.__render_info_board_item_row(x,20 + 2 * dy,9,GameMap.ITEM_SPEEDUP,player,board_image)
+      self.__render_info_board_item_row(x,20,5,Item.ITEM_BOMB,player,board_image)
+      self.__render_info_board_item_row(x,20 + dy,5,Item.ITEM_FLAME,player,board_image)
+      self.__render_info_board_item_row(x,20 + 2 * dy,9,Item.ITEM_SPEEDUP,player,board_image)
 
       y = 20 + 3 * dy
 
       items_to_check = [
-        GameMap.ITEM_SHOE,
-        GameMap.ITEM_BOXING_GLOVE,
-        GameMap.ITEM_THROWING_GLOVE,
-        GameMap.ITEM_SPRING,
-        GameMap.ITEM_MULTIBOMB,
-        GameMap.ITEM_DETONATOR,
-        GameMap.ITEM_DISEASE]
+        Item.ITEM_SHOE,
+        Item.ITEM_BOXING_GLOVE,
+        Item.ITEM_THROWING_GLOVE,
+        Item.ITEM_SPRING,
+        Item.ITEM_MULTIBOMB,
+        Item.ITEM_DETONATOR,
+        Item.ITEM_DISEASE]
       
       for item in items_to_check:
-        if player.get_item_count(item) or item == GameMap.ITEM_DISEASE and player.get_disease() != Player.DISEASE_NONE:
+        if player.get_item_count(item) or item == Item.ITEM_DISEASE and player.get_disease() != Player.DISEASE_NONE:
           board_image.blit(self.icon_images[item],(x,y))
           x += self.icon_images[item].get_size()[0] + 1
  
@@ -518,14 +472,14 @@ class Renderer(object):
     if self.menu_background_image == None:
       self.menu_background_image = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_menu_background.png"))
 
-    background_position = (self.screen_center[0] - self.menu_background_image.get_size()[0] / 2,self.screen_center[1] - self.menu_background_image.get_size()[1] / 2)
+    background_position = (self.screen_center[0] - self.menu_background_image.get_size()[0] / 2, self.screen_center[1] - self.menu_background_image.get_size()[1] / 2)
       
     self.profiler.measure_start("menu rend. backg.")
     result.blit(self.menu_background_image,background_position)
     self.profiler.measure_stop("menu rend. backg.")
 
     self.profiler.measure_start("menu rend. party")
-    if game.cheat_is_active(CHEAT_PARTY):
+    if game.cheat_is_active(CheatCode.CHEAT_PARTY):
       for circle_info in self.party_circles:           # draw circles
         circle_coords = (self.screen_center[0] + circle_info[0][0],self.screen_center[1] + circle_info[0][1])     
         radius_coefficient = (math.sin(pygame.time.get_ticks() * circle_info[4] / 100.0 + circle_info[3]) + 1) / 2.0
@@ -603,7 +557,7 @@ class Renderer(object):
     for column in menu_items:
       rows = max(rows,len(column))
 
-    if rows > MENU_MAX_ITEMS_VISIBLE:
+    if rows > MenuConfig.MENU_MAX_ITEMS_VISIBLE:
       x = xs[0] + Renderer.SCROLLBAR_RELATIVE_POSITION[0]
       
       result.blit(self.gui_images["arrow up"],(x,items_y))
@@ -621,7 +575,7 @@ class Renderer(object):
     for j in range(len(menu_items)):
       y = items_y
       
-      for i in range(min(MENU_MAX_ITEMS_VISIBLE,len(menu_items[j]) - menu_to_render.get_scroll_position())):
+      for i in range(min(MenuConfig.MENU_MAX_ITEMS_VISIBLE,len(menu_items[j]) - menu_to_render.get_scroll_position())):
         item_image = self.menu_item_images[(j,i + menu_to_render.get_scroll_position())][1]
 
         x = xs[j] - item_image.get_size()[0] / 2
@@ -655,7 +609,7 @@ class Renderer(object):
     
     # render confirm dialog if prompting
     
-    if menu_to_render.get_state() == MENU_STATE_CONFIRM_PROMPT:
+    if menu_to_render.get_state() == MenuConfig.MENU_STATE_CONFIRM_PROMPT:
       width = 120
       height = 80
       x = self.screen_center[0] - width / 2
@@ -707,14 +661,14 @@ class Renderer(object):
     
       map_info_border_size = 5
     
-      self.preview_map_image = pygame.Surface((tile_size * MAP_WIDTH,tile_size * MAP_HEIGHT + map_info_border_size + MAP_TILE_HEIGHT))
+      self.preview_map_image = pygame.Surface((tile_size * MapConfig.MAP_WIDTH,tile_size * MapConfig.MAP_HEIGHT + map_info_border_size + MapConfig.MAP_TILE_HEIGHT))
     
-      with open(os.path.join(MAP_PATH,map_filename)) as map_file:
+      with open(os.path.join(MAP_PATH, map_filename)) as map_file:
         map_data = map_file.read()
         temp_map = GameMap(map_data,PlaySetup(),0,0)
         
-        for y in range(MAP_HEIGHT):
-          for x in range(MAP_WIDTH):
+        for y in range(MapConfig.MAP_HEIGHT):
+          for x in range(MapConfig.MAP_WIDTH):
             tile = temp_map.get_tile_at((x,y))
             tile_kind = tile.kind
             
@@ -752,18 +706,18 @@ class Renderer(object):
           pygame.draw.rect(self.preview_map_image,tile_color,pygame.Rect(pos_x,pos_y,tile_size,tile_size))
           pygame.draw.circle(self.preview_map_image,Renderer.COLOR_RGB_VALUES[player_index],draw_position,tile_half_size)
 
-        y = tile_size * MAP_HEIGHT + map_info_border_size
+        y = tile_size * MapConfig.MAP_HEIGHT + map_info_border_size
         column = 0
 
         self.preview_map_image.blit(self.environment_images[temp_map.get_environment_name()][0],(0,y))
 
         # draw starting item icons
 
-        starting_x = MAP_TILE_WIDTH + 5
+        starting_x = MapConfig.MAP_TILE_WIDTH + 5
 
         x = starting_x
         
-        pygame.draw.rect(self.preview_map_image,(255,255,255),pygame.Rect(x,y,MAP_TILE_WIDTH,MAP_TILE_HEIGHT))
+        pygame.draw.rect(self.preview_map_image,(255,255,255),pygame.Rect(x,y,MapConfig.MAP_TILE_WIDTH,MapConfig.MAP_TILE_HEIGHT))
 
         starting_items = temp_map.get_starting_items()
         
@@ -802,9 +756,9 @@ class Renderer(object):
 
     self.prerendered_map_background.blit(image_background,(0,0))
 
-    for j in range(MAP_HEIGHT):
-      for i in range(MAP_WIDTH):
-        render_position = (i * MAP_TILE_WIDTH + MAP_BORDER_WIDTH,j * MAP_TILE_HEIGHT + + MAP_BORDER_WIDTH)          
+    for j in range(MapConfig.MAP_HEIGHT):
+      for i in range(MapConfig.MAP_WIDTH):
+        render_position = (i * MapConfig.MAP_TILE_WIDTH + MapConfig.MAP_BORDER_WIDTH,j * MapConfig.MAP_TILE_HEIGHT + MapConfig.MAP_BORDER_WIDTH)          
         self.prerendered_map_background.blit(self.environment_images[map_to_render.get_environment_name()][0],render_position)
        
         tile = map_to_render.get_tile_at((i,j))
@@ -827,7 +781,13 @@ class Renderer(object):
       
     game_info_text = self.render_text(self.font_small,"game " + str(game_info[0]) + " of " + str(game_info[1]),(255,255,255))
 
-    self.prerendered_map_background.blit(game_info_text,((self.prerendered_map_background.get_size()[0] - game_info_text.get_size()[0]) / 2,self.prerendered_map_background.get_size()[1] - game_info_text.get_size()[1]))
+    self.prerendered_map_background.blit(
+      game_info_text,
+      (
+        (self.prerendered_map_background.get_size()[0] - game_info_text.get_size()[0]) / 2,
+        self.prerendered_map_background.get_size()[1] - game_info_text.get_size()[1]
+      )
+    )
 
     self.prerendered_map = map_to_render
 
@@ -848,7 +808,7 @@ class Renderer(object):
         
     sprite_center = Renderer.PLAYER_SPRITE_CENTER
     animation_frame = (player.get_state_time() / 100) % 4
-    color_index = player.get_number() if game_map.get_state() == GameMap.STATE_WAITING_TO_PLAY else player.get_team_number()
+    color_index = player.get_number() if game_map.get_state() == GameState.STATE_WAITING_TO_PLAY else player.get_team_number()
 
     if player.is_in_air():
       if player.get_state_time() < Player.JUMP_DURATION / 2:
@@ -863,7 +823,7 @@ class Renderer(object):
       draw_shadow = False
               
       relative_offset[0] = -1 * (image_to_render.get_size()[0] / 2 - Renderer.PLAYER_SPRITE_CENTER[0])                   # offset caused by scale  
-      relative_offset[1] = -1 * int(math.sin(quotient * math.pi / 2.0) * MAP_TILE_HEIGHT * MAP_HEIGHT)  # height offset
+      relative_offset[1] = -1 * int(math.sin(quotient * math.pi / 2.0) * MapConfig.MAP_TILE_HEIGHT * MapConfig.MAP_HEIGHT)  # height offset
 
     elif player.is_teleporting():
       image_to_render = self.player_images[color_index][("up","right","down","left")[animation_frame]]
@@ -915,10 +875,10 @@ class Renderer(object):
       helper_offset = -1 * bomb.flight_info.total_distance_to_travel + bomb.flight_info.distance_travelled
             
       relative_offset = [
-        int(bomb.flight_info.direction[0] * helper_offset * MAP_TILE_WIDTH),
-        int(bomb.flight_info.direction[1] * helper_offset * MAP_TILE_HALF_HEIGHT)]
+        int(bomb.flight_info.direction[0] * helper_offset * MapConfig.MAP_TILE_WIDTH),
+        int(bomb.flight_info.direction[1] * helper_offset * MapConfig.MAP_TILE_HALF_HEIGHT)]
 
-      relative_offset[1] -= int(math.sin(normalised_distance_travelled * math.pi) * bomb.flight_info.total_distance_to_travel * MAP_TILE_HEIGHT / 2)  # height in air
+      relative_offset[1] -= int(math.sin(normalised_distance_travelled * math.pi) * bomb.flight_info.total_distance_to_travel * MapConfig.MAP_TILE_HEIGHT / 2)  # height in air
           
     image_to_render = self.bomb_images[animation_frame]
           
@@ -962,9 +922,9 @@ class Renderer(object):
     tiles = map_to_render.get_tiles()
     environment_images = self.environment_images[map_to_render.get_environment_name()]
     
-    y = MAP_BORDER_WIDTH + self.map_render_location[1]
-    y_offset_block = MAP_TILE_HEIGHT - environment_images[1].get_size()[1]
-    y_offset_wall = MAP_TILE_HEIGHT - environment_images[2].get_size()[1]
+    y = MapConfig.MAP_BORDER_WIDTH + self.map_render_location[1]
+    y_offset_block = MapConfig.MAP_TILE_HEIGHT - environment_images[1].get_size()[1]
+    y_offset_wall = MapConfig.MAP_TILE_HEIGHT - environment_images[2].get_size()[1]
     
     line_number = 0
     object_to_render_index = 0
@@ -972,7 +932,7 @@ class Renderer(object):
     flame_animation_frame = (pygame.time.get_ticks() / 100) % 2
     
     for line in tiles:
-      x = (MAP_WIDTH - 1) * MAP_TILE_WIDTH + MAP_BORDER_WIDTH + self.map_render_location[0]
+      x = (MapConfig.MAP_WIDTH - 1) * MapConfig.MAP_TILE_WIDTH + MapConfig.MAP_BORDER_WIDTH + self.map_render_location[0]
       
       while True:                  # render players and bombs in the current line 
         if object_to_render_index >= len(ordered_objects_to_render):
@@ -995,13 +955,13 @@ class Renderer(object):
         if draw_shadow:
           render_position = self.tile_position_to_pixel_position(object_to_render.get_position(),Renderer.SHADOW_SPRITE_CENTER)
           render_position = (
-            (render_position[0] + MAP_BORDER_WIDTH + relative_offset[0]) % self.prerendered_map_background.get_size()[0] + self.map_render_location[0],
-            render_position[1] + MAP_BORDER_WIDTH + self.map_render_location[1])
+            (render_position[0] + MapConfig.MAP_BORDER_WIDTH + relative_offset[0]) % self.prerendered_map_background.get_size()[0] + self.map_render_location[0],
+            render_position[1] + MapConfig.MAP_BORDER_WIDTH + self.map_render_location[1])
 
           result.blit(self.other_images["shadow"],render_position)
         
         render_position = self.tile_position_to_pixel_position(object_to_render.get_position(),sprite_center)
-        render_position = ((render_position[0] + MAP_BORDER_WIDTH + relative_offset[0]) % self.prerendered_map_background.get_size()[0] + self.map_render_location[0],render_position[1] + MAP_BORDER_WIDTH + relative_offset[1] + self.map_render_location[1])
+        render_position = ((render_position[0] + MapConfig.MAP_BORDER_WIDTH + relative_offset[0]) % self.prerendered_map_background.get_size()[0] + self.map_render_location[0],render_position[1] + MapConfig.MAP_BORDER_WIDTH + relative_offset[1] + self.map_render_location[1])
         
         result.blit(image_to_render,render_position)
         
@@ -1028,13 +988,13 @@ class Renderer(object):
       # for debug: uncomment this to see danger values on the map
       # pygame.draw.rect(result,(int((1 - map_to_render.get_danger_value(tile.coordinates) / float(GameMap.SAFE_DANGER_VALUE)) * 255.0),0,0),pygame.Rect(x + 10,y + 10,30,30))
 
-        x -= MAP_TILE_WIDTH
+        x -= MapConfig.MAP_TILE_WIDTH
   
         self.profiler.measure_stop("map rend. tiles")
   
-      x = (MAP_WIDTH - 1) * MAP_TILE_WIDTH + MAP_BORDER_WIDTH + self.map_render_location[0]
+      x = (MapConfig.MAP_WIDTH - 1) * MapConfig.MAP_TILE_WIDTH + MapConfig.MAP_BORDER_WIDTH + self.map_render_location[0]
   
-      y += MAP_TILE_HEIGHT
+      y += MapConfig.MAP_TILE_HEIGHT
       line_number += 1
 
     # update animations
@@ -1078,8 +1038,8 @@ class Renderer(object):
    
     self.profiler.measure_stop("map rend. earthquake")
    
-    if map_to_render.get_state() == GameMap.STATE_WAITING_TO_PLAY:
-      third = GameMap.START_GAME_AFTER / 3
+    if map_to_render.get_state() == GameState.STATE_WAITING_TO_PLAY:
+      third = START_GAME_AFTER / 3
       
       countdown_image_index = max(3 - map_to_render.get_map_time() / third,1)
       countdown_image = self.gui_images["countdown"][countdown_image_index]
