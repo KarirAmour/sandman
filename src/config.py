@@ -39,9 +39,7 @@ ANIMATION_EVENT_RIP = 1
 ANIMATION_EVENT_SKELETION = 2
 ANIMATION_EVENT_DISEASE_CLOUD = 3
 ANIMATION_EVENT_DIE = 4
-  
 
-# Renderer Settings
 MAP_TILE_WIDTH = 50              ##< tile width in pixels
 MAP_TILE_HEIGHT = 45             ##< tile height in pixels
 MAP_TILE_HALF_WIDTH = MAP_TILE_WIDTH / 2

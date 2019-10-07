@@ -2,13 +2,14 @@ import random
 import math
 import copy
 
-from renderer import Renderer
+from rendererutils import RendererUtils
 from gamemap import GameMap
 from soundplayer import SoundPlayer
 from playerkeymaps import PlayerKeyMaps
 from positionable import Positionable
 from bomb import Bomb
-from config import ANIMATION_EVENT_DIE, ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION
+from config import ANIMATION_EVENT_DIE, ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION, \
+  MAP_WIDTH, MAP_HEIGHT
 
 
 class Player(Positionable):
@@ -164,7 +165,7 @@ class Player(Positionable):
       ANIMATION_EVENT_RIP,
       ANIMATION_EVENT_SKELETION))
     
-    game_map.add_animation_event(random_animation,Renderer.map_position_to_pixel_position(self.position,(0,-15)))
+    game_map.add_animation_event(random_animation,RendererUtils.map_position_to_pixel_position(self.position,(0,-15)))
     game_map.give_away_items(self.get_items())
 
   #----------------------------------------------------------------------------
@@ -344,7 +345,7 @@ class Player(Positionable):
     elif item == GameMap.ITEM_FLAME:
       self.flame_length += 1
     elif item == GameMap.ITEM_SUPERFLAME:
-      self.flame_length = max(GameMap.MAP_WIDTH,GameMap.MAP_HEIGHT)
+      self.flame_length = max(MAP_WIDTH,MAP_HEIGHT)
     elif item == GameMap.ITEM_MULTIBOMB:
       self.has_multibomb = True
     elif item == GameMap.ITEM_DETONATOR:

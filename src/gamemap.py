@@ -4,10 +4,13 @@ import copy
 from debug import debug_log
 from flame import Flame
 from player import Player
-from maptiles import MapTile
+from maptile import MapTile
 from positionable import Positionable
 from bomb import Bomb
+from rendererutils import RendererUtils
 from soundplayer import SoundPlayer
+from config import MAP_WIDTH, MAP_HEIGHT, WALL_MARGIN_VERTICAL, WALL_MARGIN_HORIZONTAL, \
+  ANIMATION_EVENT_DISEASE_CLOUD
 
 
 class GameMap(object):
@@ -86,7 +89,7 @@ class GameMap(object):
     for i in range(len(string_split[3])):
       tile_character = string_split[3][i]
 
-      if i % GameMap.MAP_WIDTH == 0: # add new row
+      if i % MAP_WIDTH == 0: # add new row
         line += 1
         column = 0
         self.tiles.append([])
@@ -157,7 +160,7 @@ class GameMap(object):
 
     # init danger map:
     
-    self.danger_map = [[GameMap.SAFE_DANGER_VALUE for i in range(GameMap.MAP_WIDTH)] for j in range(GameMap.MAP_HEIGHT)]  ##< 2D array of times in ms for each square that
+    self.danger_map = [[GameMap.SAFE_DANGER_VALUE for i in range(MAP_WIDTH)] for j in range(MAP_HEIGHT)]  ##< 2D array of times in ms for each square that
        
     # initialise players:
 
@@ -410,7 +413,7 @@ class GameMap(object):
   ## Checks if given tile coordinates are within the map boundaries.
 
   def tile_is_withing_map(self, tile_coordinates):
-    return tile_coordinates[0] >= 0 and tile_coordinates[1] >= 0 and tile_coordinates[0] <= GameMap.MAP_WIDTH - 1 and tile_coordinates[1] <= GameMap.MAP_HEIGHT - 1
+    return tile_coordinates[0] >= 0 and tile_coordinates[1] >= 0 and tile_coordinates[0] <= MAP_WIDTH - 1 and tile_coordinates[1] <= MAP_HEIGHT - 1
 
   #----------------------------------------------------------------------------
 
@@ -433,17 +436,17 @@ class GameMap(object):
     
     position_within_tile = (position[0] % 1,position[1] % 1)
     
-    if position_within_tile[1] < GameMap.WALL_MARGIN_HORIZONTAL:
+    if position_within_tile[1] < WALL_MARGIN_HORIZONTAL:
       if not self.tile_is_walkable((tile_coordinates[0],tile_coordinates[1] - 1)):
         return GameMap.COLLISION_BORDER_UP
-    elif position_within_tile[1] > 1.0 - GameMap.WALL_MARGIN_HORIZONTAL:
+    elif position_within_tile[1] > 1.0 - WALL_MARGIN_HORIZONTAL:
       if not self.tile_is_walkable((tile_coordinates[0],tile_coordinates[1] + 1)):
         return GameMap.COLLISION_BORDER_DOWN
       
-    if position_within_tile[0] < GameMap.WALL_MARGIN_VERTICAL:
+    if position_within_tile[0] < WALL_MARGIN_VERTICAL:
       if not self.tile_is_walkable((tile_coordinates[0] - 1,tile_coordinates[1])):
         return GameMap.COLLISION_BORDER_LEFT
-    elif position_within_tile[0] > 1.0 - GameMap.WALL_MARGIN_VERTICAL:
+    elif position_within_tile[0] > 1.0 - WALL_MARGIN_VERTICAL:
       if not self.tile_is_walkable((tile_coordinates[0] + 1,tile_coordinates[1])):
         return GameMap.COLLISION_BORDER_RIGHT
     
@@ -492,7 +495,7 @@ class GameMap(object):
                      # up                    right                down                 left
     axis_position    = [bomb_position[1] - 1,bomb_position[0] + 1,bomb_position[1] + 1,bomb_position[0] - 1]
     flame_stop       = [False,               False,               False,               False]
-    map_limit        = [0,                   GameMap.MAP_WIDTH - 1,   GameMap.MAP_HEIGHT - 1,  0]
+    map_limit        = [0,                   MAP_WIDTH - 1,   MAP_HEIGHT - 1,  0]
     increment        = [-1,                  1,                   1,                   -1]
     goes_horizontaly = [False,               True,                False,               True]
     previous_flame   = [None,                None,                None,                None]
@@ -544,8 +547,8 @@ class GameMap(object):
   def spread_items(self, items):
     possible_tiles = []
     
-    for y in range(GameMap.MAP_HEIGHT):
-      for x in range(GameMap.MAP_WIDTH):
+    for y in range(MAP_HEIGHT):
+      for x in range(MAP_WIDTH):
         tile = self.tiles[y][x]
         
         if tile.kind == MapTile.TILE_FLOOR and tile.special_object == None and tile.item == None and not self.tile_has_player((x,y)):
@@ -697,7 +700,7 @@ class GameMap(object):
         continue
       
       if release_disease_cloud and player.get_disease() != Player.DISEASE_NONE:
-        self.add_animation_event(Renderer.ANIMATION_EVENT_DISEASE_CLOUD,Renderer.map_position_to_pixel_position(player.get_position(),(0,0)))
+        self.add_animation_event(ANIMATION_EVENT_DISEASE_CLOUD,RendererUtils.map_position_to_pixel_position(player.get_position(),(0,0)))
       
       if self.winning_color == -1:
         self.winning_color = player.get_team_number()
