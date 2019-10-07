@@ -2,14 +2,15 @@ import random
 import math
 import copy
 
+from config import ANIMATION_EVENT_DIE, ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION, \
+  MAP_WIDTH, MAP_HEIGHT, COLLISION_BORDER_UP, COLLISION_BORDER_DOWN, COLLISION_BORDER_LEFT, COLLISION_BORDER_RIGHT, \
+    STATE_WAITING_TO_PLAY, COLLISION_TOTAL
 from rendererutils import RendererUtils
-from gamemap import GameMap
 from soundplayer import SoundPlayer
 from playerkeymaps import PlayerKeyMaps
 from positionable import Positionable
 from bomb import Bomb
-from config import ANIMATION_EVENT_DIE, ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION, \
-  MAP_WIDTH, MAP_HEIGHT
+from item import Item
 
 
 class Player(Positionable):
@@ -80,8 +81,8 @@ class Player(Positionable):
     self.kills = 0
     self.wins = 0
   
-    self.items[GameMap.ITEM_BOMB] = 1
-    self.items[GameMap.ITEM_FLAME] = 1
+    self.items[Item.ITEM_BOMB] = 1
+    self.items[Item.ITEM_FLAME] = 1
 
   #----------------------------------------------------------------------------
     
@@ -323,45 +324,45 @@ class Player(Positionable):
       
     self.info_board_update_needed = True
       
-    if item == GameMap.ITEM_RANDOM:
+    if item == Item.ITEM_RANDOM:
       item = random.choice((
-        GameMap.ITEM_BOMB,
-        GameMap.ITEM_FLAME,
-        GameMap.ITEM_SUPERFLAME,
-        GameMap.ITEM_MULTIBOMB,
-        GameMap.ITEM_SPRING,
-        GameMap.ITEM_SHOE,
-        GameMap.ITEM_SPEEDUP,
-        GameMap.ITEM_DISEASE,
-        GameMap.ITEM_BOXING_GLOVE,
-        GameMap.ITEM_DETONATOR,
-        GameMap.ITEM_THROWING_GLOVE
+        Item.ITEM_BOMB,
+        Item.ITEM_FLAME,
+        Item.ITEM_SUPERFLAME,
+        Item.ITEM_MULTIBOMB,
+        Item.ITEM_SPRING,
+        Item.ITEM_SHOE,
+        Item.ITEM_SPEEDUP,
+        Item.ITEM_DISEASE,
+        Item.ITEM_BOXING_GLOVE,
+        Item.ITEM_DETONATOR,
+        Item.ITEM_THROWING_GLOVE
         ))
       
     sound_to_make = SoundPlayer.SOUND_EVENT_CLICK
       
-    if item == GameMap.ITEM_BOMB:
+    if item == Item.ITEM_BOMB:
       self.bombs_left += 1
-    elif item == GameMap.ITEM_FLAME:
+    elif item == Item.ITEM_FLAME:
       self.flame_length += 1
-    elif item == GameMap.ITEM_SUPERFLAME:
+    elif item == Item.ITEM_SUPERFLAME:
       self.flame_length = max(MAP_WIDTH,MAP_HEIGHT)
-    elif item == GameMap.ITEM_MULTIBOMB:
+    elif item == Item.ITEM_MULTIBOMB:
       self.has_multibomb = True
-    elif item == GameMap.ITEM_DETONATOR:
+    elif item == Item.ITEM_DETONATOR:
       self.detonator_bombs_left = 3      
-    elif item == GameMap.ITEM_SPRING:
+    elif item == Item.ITEM_SPRING:
       self.has_spring = True
       sound_to_make = SoundPlayer.SOUND_EVENT_SPRING
-    elif item == GameMap.ITEM_SPEEDUP:
+    elif item == Item.ITEM_SPEEDUP:
       self.speed = min(self.speed + Player.SPEEDUP_VALUE,Player.MAX_SPEED)
-    elif item == GameMap.ITEM_SHOE:
+    elif item == Item.ITEM_SHOE:
       self.has_shoe = True
-    elif item == GameMap.ITEM_BOXING_GLOVE:
+    elif item == Item.ITEM_BOXING_GLOVE:
       self.has_boxing_glove = True
-    elif item == GameMap.ITEM_THROWING_GLOVE:
+    elif item == Item.ITEM_THROWING_GLOVE:
       self.has_throwing_glove = True
-    elif item == GameMap.ITEM_DISEASE:
+    elif item == Item.ITEM_DISEASE:
       chosen_disease = random.choice([
         (Player.DISEASE_SHORT_FLAME,SoundPlayer.SOUND_EVENT_DISEASE),     
         (Player.DISEASE_SLOW,SoundPlayer.SOUND_EVENT_SLOW),
@@ -641,15 +642,15 @@ class Player(Positionable):
     collision_type = game_map.get_position_collision_type(self.position)
     collision_happened = False
 
-    if collision_type == GameMap.COLLISION_TOTAL:
+    if collision_type == COLLISION_TOTAL:
       self.position = previous_position
       collision_happened = True
     else:
       helper_mapping = {
-          GameMap.COLLISION_BORDER_UP:    (Player.STATE_WALKING_UP,    [Player.STATE_WALKING_LEFT, Player.STATE_WALKING_RIGHT], (0,distance_to_travel)),
-          GameMap.COLLISION_BORDER_DOWN:  (Player.STATE_WALKING_DOWN,  [Player.STATE_WALKING_LEFT, Player.STATE_WALKING_RIGHT], (0,-1 * distance_to_travel)),
-          GameMap.COLLISION_BORDER_RIGHT: (Player.STATE_WALKING_RIGHT, [Player.STATE_WALKING_UP, Player.STATE_WALKING_DOWN],    (- 1 * distance_to_travel,0)),
-          GameMap.COLLISION_BORDER_LEFT:  (Player.STATE_WALKING_LEFT,  [Player.STATE_WALKING_UP, Player.STATE_WALKING_DOWN],    (distance_to_travel,0))
+          COLLISION_BORDER_UP:    (Player.STATE_WALKING_UP,    [Player.STATE_WALKING_LEFT, Player.STATE_WALKING_RIGHT], (0,distance_to_travel)),
+          COLLISION_BORDER_DOWN:  (Player.STATE_WALKING_DOWN,  [Player.STATE_WALKING_LEFT, Player.STATE_WALKING_RIGHT], (0,-1 * distance_to_travel)),
+          COLLISION_BORDER_RIGHT: (Player.STATE_WALKING_RIGHT, [Player.STATE_WALKING_UP, Player.STATE_WALKING_DOWN],    (- 1 * distance_to_travel,0)),
+          COLLISION_BORDER_LEFT:  (Player.STATE_WALKING_LEFT,  [Player.STATE_WALKING_UP, Player.STATE_WALKING_DOWN],    (distance_to_travel,0))
         }
 
       if collision_type in helper_mapping:
@@ -669,7 +670,7 @@ class Player(Positionable):
   ## Sets the state and other attributes like position etc. of this player accoording to a list of input action (returned by PlayerKeyMaps.get_current_actions()).
 
   def react_to_inputs(self, input_actions, dt, game_map):
-    if self.state == Player.STATE_DEAD or game_map.get_state() == GameMap.STATE_WAITING_TO_PLAY:
+    if self.state == Player.STATE_DEAD or game_map.get_state() == STATE_WAITING_TO_PLAY:
       return
     
     if self.state in [Player.STATE_IN_AIR,Player.STATE_TELEPORTING]:

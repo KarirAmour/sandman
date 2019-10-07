@@ -9,45 +9,11 @@ from positionable import Positionable
 from bomb import Bomb
 from rendererutils import RendererUtils
 from soundplayer import SoundPlayer
-from config import MAP_WIDTH, MAP_HEIGHT, WALL_MARGIN_VERTICAL, WALL_MARGIN_HORIZONTAL, \
-  ANIMATION_EVENT_DISEASE_CLOUD
-
+from config import RendererConfig, MapConfig, Collision, GameState, \
+  SAFE_DANGER_VALUE, GIVE_AWAY_DELAY, START_GAME_AFTER, EARTHQUAKE_DURATION
+from item import Item
 
 class GameMap(object):
-  COLLISION_BORDER_UP = 0       ##< position is inside upper border with non-walkable tile
-  COLLISION_BORDER_RIGHT = 1    ##< position is inside right border with non-walkable tile
-  COLLISION_BORDER_DOWN = 2     ##< position is inside bottom border with non-walkable tile
-  COLLISION_BORDER_LEFT = 3     ##< position is inside left border with non-walkable tile
-  COLLISION_TOTAL = 4           ##< position is inside non-walkable tile
-  COLLISION_NONE = 5            ##< no collision
-
-  ITEM_BOMB = 0
-  ITEM_FLAME = 1
-  ITEM_SUPERFLAME = 2
-  ITEM_SPEEDUP = 3
-  ITEM_DISEASE = 4
-  ITEM_RANDOM = 5
-  ITEM_SPRING = 6
-  ITEM_SHOE = 7
-  ITEM_MULTIBOMB = 8
-  ITEM_BOXING_GLOVE = 9
-  ITEM_DETONATOR = 10
-  ITEM_THROWING_GLOVE = 11
-  
-  SAFE_DANGER_VALUE = 5000     ##< time in ms, used in danger map to indicate safe tile
-  
-  GIVE_AWAY_DELAY = 3000       ##< after how many ms the items of dead players will be given away
-  
-  START_GAME_AFTER = 2500      ##< delay in ms before the game begins
-  
-  STATE_WAITING_TO_PLAY = 0    ##< players can't do anything yet
-  STATE_PLAYING = 1            ##< game is being played
-  STATE_FINISHING = 2          ##< game is over but the map is still being updated for a while after
-  STATE_GAME_OVER = 3          ##< the game is definitely over and should no longer be updated
-  
-  EARTHQUAKE_DURATION = 10000
-
-  #----------------------------------------------------------------------------
   
   ## Initialises a new map from map_data (string) and a PlaySetup object.
 
@@ -64,10 +30,10 @@ class GameMap(object):
     self.environment_name = string_split[0]
 
     self.end_game_at = -1                          ##< time at which the map should go to STATE_GAME_OVER state
-    self.start_game_at = GameMap.START_GAME_AFTER
+    self.start_game_at = START_GAME_AFTER
     self.win_announced = False
     self.announce_win_at = -1
-    self.state = GameMap.STATE_WAITING_TO_PLAY
+    self.state = GameState.STATE_WAITING_TO_PLAY
     self.winner_team = -1                          ##< if map state is GameMap.STATE_GAME_OVER, this holds the winning team (-1 = draw)
 
     self.game_number = game_number
@@ -89,7 +55,7 @@ class GameMap(object):
     for i in range(len(string_split[3])):
       tile_character = string_split[3][i]
 
-      if i % MAP_WIDTH == 0: # add new row
+      if i % MapConfig.MAP_WIDTH == 0: # add new row
         line += 1
         column = 0
         self.tiles.append([])
@@ -160,7 +126,7 @@ class GameMap(object):
 
     # init danger map:
     
-    self.danger_map = [[GameMap.SAFE_DANGER_VALUE for i in range(MAP_WIDTH)] for j in range(MAP_HEIGHT)]  ##< 2D array of times in ms for each square that
+    self.danger_map = [[SAFE_DANGER_VALUE for i in range(MapConfig.MAP_WIDTH)] for j in range(MapConfig.MAP_HEIGHT)]  ##< 2D array of times in ms for each square that
        
     # initialise players:
 
@@ -222,7 +188,7 @@ class GameMap(object):
   #----------------------------------------------------------------------------
 
   def start_earthquake(self):
-    self.earthquake_time_left = GameMap.EARTHQUAKE_DURATION
+    self.earthquake_time_left = EARTHQUAKE_DURATION
 
   #----------------------------------------------------------------------------
 
@@ -263,13 +229,13 @@ class GameMap(object):
   #  are spread randomly on the map floor tiles after a while.
   
   def give_away_items(self, items):
-    self.items_to_give_away.append((pygame.time.get_ticks() + GameMap.GIVE_AWAY_DELAY,items))
+    self.items_to_give_away.append((pygame.time.get_ticks() + GIVE_AWAY_DELAY, items))
 
   #----------------------------------------------------------------------------
   
   def update_danger_map(self):
     # reset the map:
-    self.danger_map = [map(lambda tile: 0 if tile.shouldnt_walk() else GameMap.SAFE_DANGER_VALUE, tile_row) for tile_row in self.tiles]
+    self.danger_map = [map(lambda tile: 0 if tile.shouldnt_walk() else SAFE_DANGER_VALUE, tile_row) for tile_row in self.tiles]
 
     for bomb in self.bombs:
       bomb_tile = bomb.get_tile_position()
@@ -339,18 +305,18 @@ class GameMap(object):
   
   def letter_to_item(self, letter):
     mapping = {
-      "f": GameMap.ITEM_FLAME,
-      "F": GameMap.ITEM_SUPERFLAME,
-      "b": GameMap.ITEM_BOMB,
-      "k": GameMap.ITEM_SHOE,
-      "s": GameMap.ITEM_SPEEDUP,
-      "p": GameMap.ITEM_SPRING,
-      "m": GameMap.ITEM_MULTIBOMB,
-      "d": GameMap.ITEM_DISEASE,
-      "r": GameMap.ITEM_RANDOM,
-      "x": GameMap.ITEM_BOXING_GLOVE,
-      "e": GameMap.ITEM_DETONATOR,
-      "t": GameMap.ITEM_THROWING_GLOVE
+      "f": Item.ITEM_FLAME,
+      "F": Item.ITEM_SUPERFLAME,
+      "b": Item.ITEM_BOMB,
+      "k": Item.ITEM_SHOE,
+      "s": Item.ITEM_SPEEDUP,
+      "p": Item.ITEM_SPRING,
+      "m": Item.ITEM_MULTIBOMB,
+      "d": Item.ITEM_DISEASE,
+      "r": Item.ITEM_RANDOM,
+      "x": Item.ITEM_BOXING_GLOVE,
+      "e": Item.ITEM_DETONATOR,
+      "t": Item.ITEM_THROWING_GLOVE
       }
 
     return mapping[letter] if letter in mapping else -1
@@ -413,7 +379,7 @@ class GameMap(object):
   ## Checks if given tile coordinates are within the map boundaries.
 
   def tile_is_withing_map(self, tile_coordinates):
-    return tile_coordinates[0] >= 0 and tile_coordinates[1] >= 0 and tile_coordinates[0] <= MAP_WIDTH - 1 and tile_coordinates[1] <= MAP_HEIGHT - 1
+    return tile_coordinates[0] >= 0 and tile_coordinates[1] >= 0 and tile_coordinates[0] <= MapConfig.MAP_WIDTH - 1 and tile_coordinates[1] <= MapConfig.MAP_HEIGHT - 1
 
   #----------------------------------------------------------------------------
 
@@ -432,25 +398,25 @@ class GameMap(object):
     tile_coordinates = Positionable.position_to_tile(position)
     
     if not self.tile_is_walkable(tile_coordinates):
-      return GameMap.COLLISION_TOTAL
+      return Collision.COLLISION_TOTAL
     
     position_within_tile = (position[0] % 1,position[1] % 1)
     
-    if position_within_tile[1] < WALL_MARGIN_HORIZONTAL:
+    if position_within_tile[1] < MapConfig.WALL_MARGIN_HORIZONTAL:
       if not self.tile_is_walkable((tile_coordinates[0],tile_coordinates[1] - 1)):
-        return GameMap.COLLISION_BORDER_UP
-    elif position_within_tile[1] > 1.0 - WALL_MARGIN_HORIZONTAL:
+        return Collision.COLLISION_BORDER_UP
+    elif position_within_tile[1] > 1.0 - MapConfig.WALL_MARGIN_HORIZONTAL:
       if not self.tile_is_walkable((tile_coordinates[0],tile_coordinates[1] + 1)):
-        return GameMap.COLLISION_BORDER_DOWN
+        return Collision.COLLISION_BORDER_DOWN
       
-    if position_within_tile[0] < WALL_MARGIN_VERTICAL:
+    if position_within_tile[0] < MapConfig.WALL_MARGIN_VERTICAL:
       if not self.tile_is_walkable((tile_coordinates[0] - 1,tile_coordinates[1])):
-        return GameMap.COLLISION_BORDER_LEFT
-    elif position_within_tile[0] > 1.0 - WALL_MARGIN_VERTICAL:
+        return Collision.COLLISION_BORDER_LEFT
+    elif position_within_tile[0] > 1.0 - MapConfig.WALL_MARGIN_VERTICAL:
       if not self.tile_is_walkable((tile_coordinates[0] + 1,tile_coordinates[1])):
-        return GameMap.COLLISION_BORDER_RIGHT
+        return Collision.COLLISION_BORDER_RIGHT
     
-    return GameMap.COLLISION_NONE
+    return Collision.COLLISION_NONE
 
   #----------------------------------------------------------------------------
 
@@ -495,7 +461,7 @@ class GameMap(object):
                      # up                    right                down                 left
     axis_position    = [bomb_position[1] - 1,bomb_position[0] + 1,bomb_position[1] + 1,bomb_position[0] - 1]
     flame_stop       = [False,               False,               False,               False]
-    map_limit        = [0,                   MAP_WIDTH - 1,   MAP_HEIGHT - 1,  0]
+    map_limit        = [0,                   MapConfig.MAP_WIDTH - 1,   MapConfig.MAP_HEIGHT - 1,  0]
     increment        = [-1,                  1,                   1,                   -1]
     goes_horizontaly = [False,               True,                False,               True]
     previous_flame   = [None,                None,                None,                None]
@@ -547,8 +513,8 @@ class GameMap(object):
   def spread_items(self, items):
     possible_tiles = []
     
-    for y in range(MAP_HEIGHT):
-      for x in range(MAP_WIDTH):
+    for y in range(MapConfig.MAP_HEIGHT):
+      for x in range(MapConfig.MAP_WIDTH):
         tile = self.tiles[y][x]
         
         if tile.kind == MapTile.TILE_FLOOR and tile.special_object == None and tile.item == None and not self.tile_has_player((x,y)):
@@ -700,7 +666,7 @@ class GameMap(object):
         continue
       
       if release_disease_cloud and player.get_disease() != Player.DISEASE_NONE:
-        self.add_animation_event(ANIMATION_EVENT_DISEASE_CLOUD,RendererUtils.map_position_to_pixel_position(player.get_position(),(0,0)))
+        self.add_animation_event(RendererConfig.ANIMATION_EVENT_DISEASE_CLOUD,RendererUtils.map_position_to_pixel_position(player.get_position(),(0,0)))
       
       if self.winning_color == -1:
         self.winning_color = player.get_team_number()
@@ -815,20 +781,20 @@ class GameMap(object):
 
     self.__update_players(dt,immortal_player_numbers)
           
-    if self.state == GameMap.STATE_WAITING_TO_PLAY:  
+    if self.state == GameState.STATE_WAITING_TO_PLAY:  
       if self.time_from_start >= self.start_game_at:
-        self.state = GameMap.STATE_PLAYING
+        self.state = GameState.STATE_PLAYING
         self.add_sound_event(SoundPlayer.SOUND_EVENT_GO)
-    if self.state == GameMap.STATE_FINISHING:
+    if self.state == GameState.STATE_FINISHING:
       if self.time_from_start >= self.end_game_at:
-        self.state = GameMap.STATE_GAME_OVER
+        self.state = GameState.STATE_GAME_OVER
       elif not self.win_announced:
         if self.time_from_start >= self.announce_win_at:
           self.add_sound_event(SoundPlayer.SOUND_EVENT_WIN_0 + self.winner_team)
           self.win_announced = True
-    elif self.state != GameMap.STATE_GAME_OVER and self.game_is_over:
+    elif self.state != GameState.STATE_GAME_OVER and self.game_is_over:
       self.end_game_at = self.time_from_start + 5000
-      self.state = GameMap.STATE_FINISHING
+      self.state = GameState.STATE_FINISHING
       self.winner_team = self.winning_color
       self.announce_win_at = self.time_from_start + 2000
     

@@ -1036,7 +1036,7 @@ class Renderer(object):
   
       y += MAP_TILE_HEIGHT
       line_number += 1
-      
+
     # update animations
     
     self.profiler.measure_start("map rend. anim")

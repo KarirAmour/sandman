@@ -4,7 +4,7 @@ import pygame
 from stringserializable import StringSerializable
 from config import NUMBER_OF_CONTROLLED_PLAYERS
 from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
-from renderer import Renderer
+from rendererutils import RendererUtils
 
 ## Handles conversion of keyboard events to actions of players, plus general
 #  actions (such as menu, ...). Also managed some more complex input processing.
@@ -383,7 +383,7 @@ class PlayerKeyMaps(StringSerializable):
     # check mouse control:
 
     if self.allow_mouse_control:
-      screen_center = (Renderer.get_screen_size()[0] / 2,Renderer.get_screen_size()[1] / 2)
+      screen_center = (RendererUtils.get_screen_size()[0] / 2,RendererUtils.get_screen_size()[1] / 2)
       mouse_position = pygame.mouse.get_pos(screen_center)
       pressed = pygame.mouse.get_pressed()
       
