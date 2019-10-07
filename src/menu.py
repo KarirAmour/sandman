@@ -1,18 +1,15 @@
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
+from config import MENU_MAX_ITEMS_VISIBLE
+
 #==============================================================================
 
 ## Abstract class representing a game menu. Menu item strings can contain formatting characters:
 #
 #  ^htmlcolorcode - sets the text color (HTML #rrggbb format,e.g. ^#2E44BF) from here to end of line or another formatting character
-#==============================================================================    
+#==============================================================================
+
 class Menu(object):
-  MENU_STATE_SELECTING = 0                ##< still selecting an item
-  MENU_STATE_CONFIRM = 1                  ##< menu has been confirmed
-  MENU_STATE_CANCEL = 2                   ##< menu has been cancelled
-  MENU_STATE_CONFIRM_PROMPT = 3           ##< prompting an action
-  
-  MENU_MAX_ITEMS_VISIBLE = 11
 
   #----------------------------------------------------------------------------
   

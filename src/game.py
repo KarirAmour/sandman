@@ -1,7 +1,7 @@
 import pygame
 import os
 from config import MAP_PATH, CHEAT_PARTY, CHEAT_ALL_ITEMS, CHEAT_PLAYER_IMMORTAL
-from bombman import profiler
+from profiler import Profiler
 from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
 from playmenu import PlayMenu
 from playerkeymaps import PlayerKeyMaps
@@ -22,17 +22,6 @@ from renderer import Renderer
 
 class Game(object):    
   # colors used for players and teams
-  COLOR_WHITE = 0
-  COLOR_BLACK = 1
-  COLOR_RED = 2
-  COLOR_BLUE = 3
-  COLOR_GREEN = 4
-  COLOR_CYAN = 5
-  COLOR_YELLOW = 6
-  COLOR_ORANGE = 7
-  COLOR_BROWN = 8
-  COLOR_PURPLE = 9
-
     
   STATE_PLAYING = 0
   STATE_EXIT = 1
@@ -107,6 +96,8 @@ class Game(object):
 
     self.immortal_players_numbers = []
     self.active_cheats = set()
+
+    self.profiler = Profiler()
 
   #----------------------------------------------------------------------------
 
@@ -317,7 +308,7 @@ class Game(object):
     pygame_clock = pygame.time.Clock()
 
     while True:                                  # main loop
-      profiler.measure_start("main loop")
+      self.profiler.measure_start("main loop")
       
       dt = min(pygame.time.get_ticks() - time_before,100)
       time_before = pygame.time.get_ticks()
@@ -336,13 +327,13 @@ class Game(object):
         self.renderer.process_animation_events(self.game_map.get_and_clear_animation_events()) # play animations
         self.sound_player.process_events(self.game_map.get_and_clear_sound_events())           # play sounds
         
-        profiler.measure_start("map rend.")
+        self.profiler.measure_start("map rend.")
         self.screen.blit(self.renderer.render_map(self.game_map),(0,0)) 
-        profiler.measure_stop("map rend.")
+        self.profiler.measure_stop("map rend.")
         
-        profiler.measure_start("sim.")
+        self.profiler.measure_start("sim.")
         self.simulation_step(dt)
-        profiler.measure_stop("sim.")
+        self.profiler.measure_stop("sim.")
         
         if self.game_map.get_state() == GameMap.STATE_GAME_OVER:
           self.game_number += 1
@@ -406,9 +397,9 @@ class Game(object):
       else:   # in menu
         self.manage_menus()
         
-        profiler.measure_start("menu rend.")
+        self.profiler.measure_start("menu rend.")
         self.screen.blit(self.renderer.render_menu(self.active_menu,self),(0,0))  
-        profiler.measure_stop("menu rend.")
+        self.profiler.measure_stop("menu rend.")
 
       pygame.display.flip()
       pygame_clock.tick()
@@ -423,11 +414,11 @@ class Game(object):
         
       self.frame_number += 1
       
-      profiler.measure_stop("main loop")
+      self.profiler.measure_stop("main loop")
       
       if DEBUG_PROFILING:
-        debug_log(profiler.get_profile_string())
-        profiler.end_of_frame()
+        debug_log(self.profiler.get_profile_string())
+        self.profiler.end_of_frame()
 
   #----------------------------------------------------------------------------
 
@@ -449,27 +440,27 @@ class Game(object):
         self.state = Game.STATE_MENU_PLAY
         return
     
-    profiler.measure_start("sim. AIs")
+    self.profiler.measure_start("sim. AIs")
     
     for i in range(len(self.ais)):
       actions_being_performed = actions_being_performed + self.ais[i].play()
       
-    profiler.measure_stop("sim. AIs")
+    self.profiler.measure_stop("sim. AIs")
     
     players = self.game_map.get_players()
 
-    profiler.measure_start("sim. inputs")
+    self.profiler.measure_start("sim. inputs")
     
     for player in players:
       player.react_to_inputs(actions_being_performed,dt,self.game_map)
       
-    profiler.measure_stop("sim. inputs")
+    self.profiler.measure_stop("sim. inputs")
       
-    profiler.measure_start("sim. map update")
+    self.profiler.measure_start("sim. map update")
     
     self.game_map.update(dt,self.immortal_players_numbers)
     
-    profiler.measure_stop("sim. map update")
+    self.profiler.measure_stop("sim. map update")
 
   #----------------------------------------------------------------------------
 

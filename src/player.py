@@ -8,6 +8,7 @@ from soundplayer import SoundPlayer
 from playerkeymaps import PlayerKeyMaps
 from positionable import Positionable
 from bomb import Bomb
+from config import ANIMATION_EVENT_DIE, ANIMATION_EVENT_EXPLOSION, ANIMATION_EVENT_RIP, ANIMATION_EVENT_SKELETION
 
 
 class Player(Positionable):
@@ -158,10 +159,10 @@ class Player(Positionable):
     game_map.add_sound_event(SoundPlayer.SOUND_EVENT_DEATH)
     
     random_animation = random.choice((
-      Renderer.ANIMATION_EVENT_DIE,
-      Renderer.ANIMATION_EVENT_EXPLOSION,
-      Renderer.ANIMATION_EVENT_RIP,
-      Renderer.ANIMATION_EVENT_SKELETION))
+      ANIMATION_EVENT_DIE,
+      ANIMATION_EVENT_EXPLOSION,
+      ANIMATION_EVENT_RIP,
+      ANIMATION_EVENT_SKELETION))
     
     game_map.add_animation_event(random_animation,Renderer.map_position_to_pixel_position(self.position,(0,-15)))
     game_map.give_away_items(self.get_items())

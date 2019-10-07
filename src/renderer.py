@@ -1,12 +1,16 @@
 import pygame
 import random
+import math
 import os
 import re
 
-from config import VERSION_STR, RESOURCE_PATH, COLOR_NAMES, CHEAT_PARTY, MAP_PATH
+from config import VERSION_STR, RESOURCE_PATH, COLOR_NAMES, CHEAT_PARTY, MAP_PATH, \
+  MENU_MAX_ITEMS_VISIBLE, MENU_STATE_CONFIRM_PROMPT
+from debug import debug_log
 from gamemap import GameMap
 from animation import Animation
 from profiler import Profiler
+from player import Player
 
 class Renderer(object):
   COLOR_RGB_VALUES = [
@@ -32,13 +36,7 @@ class Renderer(object):
   SHADOW_SPRITE_CENTER = (25,22)
 
   MAP_BORDER_WIDTH = 37
-  
-  ANIMATION_EVENT_EXPLOSION = 0
-  ANIMATION_EVENT_RIP = 1
-  ANIMATION_EVENT_SKELETION = 2
-  ANIMATION_EVENT_DISEASE_CLOUD = 3
-  ANIMATION_EVENT_DIE = 4
-  
+
   FONT_SMALL_SIZE = 12
   FONT_NORMAL_SIZE = 25
   MENU_LINE_SPACING = 10
@@ -624,7 +622,7 @@ class Renderer(object):
     for column in menu_items:
       rows = max(rows,len(column))
 
-    if rows > Menu.MENU_MAX_ITEMS_VISIBLE:
+    if rows > MENU_MAX_ITEMS_VISIBLE:
       x = xs[0] + Renderer.SCROLLBAR_RELATIVE_POSITION[0]
       
       result.blit(self.gui_images["arrow up"],(x,items_y))
@@ -642,7 +640,7 @@ class Renderer(object):
     for j in range(len(menu_items)):
       y = items_y
       
-      for i in range(min(Menu.MENU_MAX_ITEMS_VISIBLE,len(menu_items[j]) - menu_to_render.get_scroll_position())):
+      for i in range(min(MENU_MAX_ITEMS_VISIBLE,len(menu_items[j]) - menu_to_render.get_scroll_position())):
         item_image = self.menu_item_images[(j,i + menu_to_render.get_scroll_position())][1]
 
         x = xs[j] - item_image.get_size()[0] / 2
@@ -676,7 +674,7 @@ class Renderer(object):
     
     # render confirm dialog if prompting
     
-    if menu_to_render.get_state() == Menu.MENU_STATE_CONFIRM_PROMPT:
+    if menu_to_render.get_state() == MENU_STATE_CONFIRM_PROMPT:
       width = 120
       height = 80
       x = self.screen_center[0] - width / 2

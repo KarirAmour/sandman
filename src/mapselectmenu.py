@@ -1,4 +1,9 @@
+import os
+import random
+
 from menu import Menu
+from renderer import Renderer
+from config import MAP_PATH
 
 class MapSelectMenu(Menu):
 
@@ -13,7 +18,7 @@ class MapSelectMenu(Menu):
   #----------------------------------------------------------------------------
     
   def update_items(self):
-    self.map_filenames = sorted([filename for filename in os.listdir(Game.MAP_PATH) if os.path.isfile(os.path.join(Game.MAP_PATH,filename))])
+    self.map_filenames = sorted([filename for filename in os.listdir(MAP_PATH) if os.path.isfile(os.path.join(MAP_PATH,filename))])
 
     special_color = (100,100,255)
 

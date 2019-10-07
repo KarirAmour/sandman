@@ -1,4 +1,7 @@
 from menu import Menu
+from color import Color
+from renderer import Renderer
+from playerkeymaps import PlayerKeyMaps
 
 class PlaySetupMenu(Menu):
 
@@ -21,7 +24,7 @@ class PlaySetupMenu(Menu):
     self.items[1].append("next")
          
     for i in range(10):
-      slot_color = Renderer.COLOR_RGB_VALUES[i] if i != Game.COLOR_BLACK else dark_grey  # black with black border not visible, use dark grey
+      slot_color = Renderer.COLOR_RGB_VALUES[i] if i != Color.COLOR_BLACK else dark_grey  # black with black border not visible, use dark grey
       
       self.items[0].append(Renderer.colored_text(i,str(i + 1)) + ": ")
       
@@ -31,7 +34,7 @@ class PlaySetupMenu(Menu):
         self.items[0][-1] += "-"
         self.items[1].append("-")
       else:
-        team_color = Renderer.COLOR_RGB_VALUES[slot[1]] if slot[1] != Game.COLOR_BLACK else dark_grey
+        team_color = Renderer.COLOR_RGB_VALUES[slot[1]] if slot[1] != Color.COLOR_BLACK else dark_grey
         self.items[0][-1] += ("player " + str(slot[0] + 1)) if slot[0] >= 0 else "AI"
         self.items[1].append(Renderer.colored_text(slot[1],str(slot[1] + 1)))    # team number
 
