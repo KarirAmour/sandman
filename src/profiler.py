@@ -1,4 +1,4 @@
-
+from player import Player
 
 class Profiler(object):
   SHOW_LAST = 10
