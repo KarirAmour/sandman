@@ -1,4 +1,6 @@
 import random
+import math
+import copy
 
 from renderer import Renderer
 from gamemap import GameMap
