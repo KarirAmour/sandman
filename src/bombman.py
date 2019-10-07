@@ -81,16 +81,6 @@ import time
 
 from game import Game
 
-
-DEBUG_PROFILING = False
-DEBUG_FPS = False
-DEBUG_VERBOSE = False
-
-
-def debug_log(message):
-  if DEBUG_VERBOSE:      
-    print(message)
-
 if __name__ == "__main__":
   profiler = Profiler()   # profiler object is global, for simple access
   game = Game()
