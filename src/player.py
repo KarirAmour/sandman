@@ -5,7 +5,6 @@ import copy
 from renderer import Renderer
 from gamemap import GameMap
 from soundplayer import SoundPlayer
-from positionable import Positionable
 from playerkeymaps import PlayerKeyMaps
 from positionable import Positionable
 from bomb import Bomb

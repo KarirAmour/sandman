@@ -1,7 +1,8 @@
 import pygame
 import os
-
-from debug import DEBUG_PROFILING, DEBUG_FPS, debug_log
+from config import *
+from bombman import profiler
+from debug import DEBUG_PROFILING, DEBUG_FPS, DEBUG_VERBOSE, debug_log
 from playmenu import PlayMenu
 from playerkeymaps import PlayerKeyMaps
 from soundplayer import SoundPlayer
@@ -10,6 +11,7 @@ from settingsmenu import SettingsMenu
 from controlsmenu import ControlsMenu
 from aboutmenu import AboutMenu
 from mapselectmenu import MapSelectMenu
+from ai import AI
 from playsetupmenu import PlaySetupMenu
 from resultmenu import ResultMenu
 from mainmenu import MainMenu
@@ -45,14 +47,10 @@ class Game(object):
   STATE_MENU_RESULTS = 9
   STATE_GAME_STARTED = 10
   
-  CHEAT_ALL_ITEMS = 1
-  CHEAT_PLAYER_IMMORTAL = 2
+
   
   
   
-  NUMBER_OF_CONTROLLED_PLAYERS = 4    ##< maximum number of non-AI players on one PC
-  
-  RESOURCE_PATH = "resources"
   SETTINGS_FILE_PATH = "settings.txt"
 
   #----------------------------------------------------------------------------
@@ -197,9 +195,9 @@ class Game(object):
     prevent_input_processing = False
     
     # cheack if any cheat was typed:
-    self.__check_cheat("party",game.CHEAT_PARTY)
-    self.__check_cheat("herecomedatboi",game.CHEAT_ALL_ITEMS)
-    self.__check_cheat("leeeroy",game.CHEAT_PLAYER_IMMORTAL)
+    self.__check_cheat("party", CHEAT_PARTY)
+    self.__check_cheat("herecomedatboi", CHEAT_ALL_ITEMS)
+    self.__check_cheat("leeeroy", CHEAT_PLAYER_IMMORTAL)
     self.__check_cheat("revert")
 
     self.player_key_maps.get_current_actions()       # this has to be called in order for player_key_maps to update mouse controls properly
@@ -289,7 +287,7 @@ class Game(object):
         self.game_number = 1     # first game
         new_state = Game.STATE_GAME_STARTED
         
-        self.deactivate_cheat(Game.CHEAT_PARTY)
+        self.deactivate_cheat(CHEAT_PARTY)
     
     # ================ RESULT MENU ================
     elif self.state == Game.STATE_MENU_RESULTS:
@@ -320,7 +318,7 @@ class Game(object):
     pygame_clock = pygame.time.Clock()
 
     while True:                                  # main loop
-      Profiler.measure_start("main loop")
+      profiler.measure_start("main loop")
       
       dt = min(pygame.time.get_ticks() - time_before,100)
       time_before = pygame.time.get_ticks()
@@ -339,13 +337,13 @@ class Game(object):
         self.renderer.process_animation_events(self.game_map.get_and_clear_animation_events()) # play animations
         self.sound_player.process_events(self.game_map.get_and_clear_sound_events())           # play sounds
         
-        Profiler.measure_start("map rend.")
+        profiler.measure_start("map rend.")
         self.screen.blit(self.renderer.render_map(self.game_map),(0,0)) 
-        Profiler.measure_stop("map rend.")
+        profiler.measure_stop("map rend.")
         
-        Profiler.measure_start("sim.")
+        profiler.measure_start("sim.")
         self.simulation_step(dt)
-        Profiler.measure_stop("sim.")
+        profiler.measure_stop("sim.")
         
         if self.game_map.get_state() == GameMap.STATE_GAME_OVER:
           self.game_number += 1
@@ -377,13 +375,13 @@ class Game(object):
         
         map_name_to_load = self.map_name if not self.random_map_selection else self.menu_map_select.get_random_map_name()
         
-        with open(os.path.join(Game.MAP_PATH,map_name_to_load)) as map_file:
+        with open(os.path.join(MAP_PATH,map_name_to_load)) as map_file:
           map_data = map_file.read()
           self.game_map = GameMap(map_data,self.play_setup,self.game_number,self.play_setup.get_number_of_games(),self.cheat_is_active(Game.CHEAT_ALL_ITEMS))
           
         player_slots = self.play_setup.get_slots()
         
-        if self.cheat_is_active(Game.CHEAT_PLAYER_IMMORTAL):
+        if self.cheat_is_active(CHEAT_PLAYER_IMMORTAL):
           self.immortal_players_numbers = []
           
           for i in range(len(player_slots)):
@@ -409,9 +407,9 @@ class Game(object):
       else:   # in menu
         self.manage_menus()
         
-        Profiler.measure_start("menu rend.")
+        profiler.measure_start("menu rend.")
         self.screen.blit(self.renderer.render_menu(self.active_menu,self),(0,0))  
-        Profiler.measure_stop("menu rend.")
+        profiler.measure_stop("menu rend.")
 
       pygame.display.flip()
       pygame_clock.tick()
@@ -426,11 +424,11 @@ class Game(object):
         
       self.frame_number += 1
       
-      Profiler.measure_stop("main loop")
+      profiler.measure_stop("main loop")
       
       if DEBUG_PROFILING:
-        debug_log(Profiler.get_profile_string())
-        Profiler.end_of_frame()
+        debug_log(profiler.get_profile_string())
+        profiler.end_of_frame()
 
   #----------------------------------------------------------------------------
 
@@ -452,27 +450,27 @@ class Game(object):
         self.state = Game.STATE_MENU_PLAY
         return
     
-    Profiler.measure_start("sim. AIs")
+    profiler.measure_start("sim. AIs")
     
     for i in range(len(self.ais)):
       actions_being_performed = actions_being_performed + self.ais[i].play()
       
-    Profiler.measure_stop("sim. AIs")
+    profiler.measure_stop("sim. AIs")
     
     players = self.game_map.get_players()
 
-    Profiler.measure_start("sim. inputs")
+    profiler.measure_start("sim. inputs")
     
     for player in players:
       player.react_to_inputs(actions_being_performed,dt,self.game_map)
       
-    Profiler.measure_stop("sim. inputs")
+    profiler.measure_stop("sim. inputs")
       
-    Profiler.measure_start("sim. map update")
+    profiler.measure_start("sim. map update")
     
     self.game_map.update(dt,self.immortal_players_numbers)
     
-    Profiler.measure_stop("sim. map update")
+    profiler.measure_stop("sim. map update")
 
   #----------------------------------------------------------------------------
 
