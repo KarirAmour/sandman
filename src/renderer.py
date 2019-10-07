@@ -1,8 +1,10 @@
 import pygame
 import os
+import re
 
-from config import RESOURCE_PATH
+from config import VERSION_STR, RESOURCE_PATH, COLOR_NAMES, CHEAT_PARTY, MAP_PATH
 from gamemap import GameMap
+
 
 class Renderer(object):
   COLOR_RGB_VALUES = [
@@ -147,7 +149,7 @@ class Renderer(object):
     self.gui_images["seeker"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_seeker.png"))
     self.gui_images["cursor"] = pygame.image.load(os.path.join(RESOURCE_PATH,"gui_cursor.png"))   
     self.gui_images["prompt"] = self.render_text(self.font_normal,"You sure?",(255,255,255))
-    self.gui_images["version"] = self.render_text(self.font_small,"v " + Game.VERSION_STR,(0,100,0))
+    self.gui_images["version"] = self.render_text(self.font_small,"v " + VERSION_STR,(0,100,0))
     
     self.player_info_board_images = [None for i in range(10)]  # up to date infoboard image for each player
 
@@ -248,7 +250,7 @@ class Renderer(object):
     
   @staticmethod
   def colored_color_name(color_index, end_with_white=True):
-    return Renderer.colored_text(color_index,Game.COLOR_NAMES[color_index])
+    return Renderer.colored_text(color_index,COLOR_NAMES[color_index])
 
   #----------------------------------------------------------------------------
   
@@ -373,7 +375,7 @@ class Renderer(object):
       board_image.blit(self.gui_images["info board"],(0,0))
       board_image.blit(self.font_small.render(str(player.get_kills()),True,(0,0,0)),(45,0))
       board_image.blit(self.font_small.render(str(player.get_wins()),True,(0,0,0)),(65,0))
-      board_image.blit(self.font_small.render(Game.COLOR_NAMES[i],True,Renderer.darken_color(Renderer.COLOR_RGB_VALUES[i],100)),(4,2))
+      board_image.blit(self.font_small.render(COLOR_NAMES[i],True,Renderer.darken_color(Renderer.COLOR_RGB_VALUES[i],100)),(4,2))
       
       if player.is_dead():
         board_image.blit(self.gui_images["out"],(15,34))
@@ -538,7 +540,7 @@ class Renderer(object):
     profiler.measure_stop("menu rend. backg.")
 
     profiler.measure_start("menu rend. party")
-    if game.cheat_is_active(Game.CHEAT_PARTY):
+    if game.cheat_is_active(CHEAT_PARTY):
       for circle_info in self.party_circles:           # draw circles
         circle_coords = (self.screen_center[0] + circle_info[0][0],self.screen_center[1] + circle_info[0][1])     
         radius_coefficient = (math.sin(pygame.time.get_ticks() * circle_info[4] / 100.0 + circle_info[3]) + 1) / 2.0
@@ -722,7 +724,7 @@ class Renderer(object):
     
       self.preview_map_image = pygame.Surface((tile_size * GameMap.MAP_WIDTH,tile_size * GameMap.MAP_HEIGHT + map_info_border_size + Renderer.MAP_TILE_HEIGHT))
     
-      with open(os.path.join(Game.MAP_PATH,map_filename)) as map_file:
+      with open(os.path.join(MAP_PATH,map_filename)) as map_file:
         map_data = map_file.read()
         temp_map = GameMap(map_data,PlaySetup(),0,0)
         

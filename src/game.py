@@ -32,18 +32,6 @@ class Game(object):
   COLOR_BROWN = 8
   COLOR_PURPLE = 9
 
-  COLOR_NAMES = [
-    "white",
-    "black",
-    "red",
-    "blue",
-    "green",
-    "cyan",
-    "yellow",
-    "orange",
-    "brown",
-    "purple"
-    ]
     
   STATE_PLAYING = 0
   STATE_EXIT = 1
@@ -57,7 +45,6 @@ class Game(object):
   STATE_MENU_RESULTS = 9
   STATE_GAME_STARTED = 10
   
-  CHEAT_PARTY = 0
   CHEAT_ALL_ITEMS = 1
   CHEAT_PLAYER_IMMORTAL = 2
   
@@ -66,7 +53,6 @@ class Game(object):
   NUMBER_OF_CONTROLLED_PLAYERS = 4    ##< maximum number of non-AI players on one PC
   
   RESOURCE_PATH = "resources"
-  MAP_PATH = "maps"
   SETTINGS_FILE_PATH = "settings.txt"
 
   #----------------------------------------------------------------------------
