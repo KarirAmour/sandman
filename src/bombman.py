@@ -76,11 +76,9 @@ import copy
 
 import re
 import time
-from profiler import Profiler
 from game import Game
 
 if __name__ == "__main__":
-  profiler = Profiler()   # profiler object is global, for simple access
   game = Game()
 
   if len(sys.argv) > 1: 

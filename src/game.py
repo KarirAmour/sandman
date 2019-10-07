@@ -19,7 +19,6 @@ from menu import Menu
 from gamemap import GameMap
 from settings import Settings
 from renderer import Renderer
-from profiler import Profiler
 
 class Game(object):    
   # colors used for players and teams
